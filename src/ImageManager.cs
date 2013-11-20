@@ -9,7 +9,6 @@ namespace SurvivalGame.src
     {
         private static List<Image> images = new List<Image>();
         private static Dictionary<string, int> lookup = new Dictionary<string, int>();
-        private static bool closed = false;
 
         /// <summary>
         /// Returns the image associated with a specific value
@@ -41,7 +40,6 @@ namespace SurvivalGame.src
         /// </summary>
         public static void Close() {
             Console.WriteLine("Finished image loading");
-            closed = true;
             lookup = null;
         }
     }

@@ -18,7 +18,7 @@ namespace SurvivalGame.src
 
         private float fps;
         private int lastFrameTime;
-        private float fpsSmoothing = 0.1f;
+        private float fpsSmoothing = 1f;
         private int frameCountSkipped;
         private void UpdateFPS()
         {
@@ -26,7 +26,7 @@ namespace SurvivalGame.src
             int difference = this.lastFrameTime - time;
             if (difference > 0)
             {
-                this.fps = this.fps / (1f - this.fpsSmoothing) + 1000 / ((float)difference / (float) (this.frameCountSkipped + 1) * this.fpsSmoothing);
+                this.fps = (this.fpsSmoothing < 1 ? this.fps / (1f - this.fpsSmoothing) : 0) + 1000 / ((float)difference / (float) (this.frameCountSkipped + 1) * this.fpsSmoothing);
                 this.lastFrameTime = time;
                 this.frameCountSkipped = 0;
             }
@@ -48,23 +48,24 @@ namespace SurvivalGame.src
             this.options = options;
         }
 
-        public void Run(BufferedGraphics buffer)
+        public void Run(BufferedGraphics buffer, Queue<KeyEventArgs> inputQueue)
         {
-            running = true;
+            this.running = true;
             this.lastGameTick = DateTime.Now.Millisecond;
             this.lastFrameTime = DateTime.Now.Millisecond;
             this.fps = 0;
             this.frameCountSkipped = 0;
             this.targetTickRate = 20;
 
-            while (running)
+            while (this.running)
             {
                 int timeDraw = this.lastFrameTime - DateTime.Now.Millisecond;
                 int minimumDraw = 0;
                 int timeTick = this.lastGameTick - DateTime.Now.Millisecond;
-                int minimumTick = (int) Math.Floor(1000f / (float) targetTickRate);
+                int minimumTick = (int)Math.Floor(1000f / (float)targetTickRate);
+                System.Windows.Forms.Application.DoEvents();
                 //Input
-
+                Input(inputQueue);
                 //Tick
                 if (timeTick > minimumTick)
                 {
@@ -83,13 +84,16 @@ namespace SurvivalGame.src
                 {
                     Draw(buffer, 1000f / (float) timeDraw);
                 }
+                System.Threading.Thread.Sleep(1);
             }
+            Application.Exit();
         }
 
         private void Draw(BufferedGraphics buffer, float delta)
         {
             UpdateFPS();
             Console.WriteLine(fps);
+            this.window.Refresh();
             this.world.Draw(buffer.Graphics, this.view);
             buffer.Render();
         }
@@ -97,6 +101,20 @@ namespace SurvivalGame.src
         private void Tick(float delta)
         {
             this.lastGameTick = DateTime.Now.Millisecond;
+        }
+
+        private void Input(Queue<KeyEventArgs> inputQueue)
+        {
+            if (inputQueue.Count > 0) this.running = false;
+            while (inputQueue.Count > 0)
+            {
+                KeyEventArgs key = inputQueue.Dequeue();
+                if (key.KeyCode == Keys.Escape)
+                {
+                    this.running = false;
+                    Application.Exit();
+                }
+            }
         }
     }
 }

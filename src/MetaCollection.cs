@@ -7,7 +7,7 @@ namespace SurvivalGame.src
 {
     class MetaCollection
     {
-        private Dictionary<int, string> data;
+        private Dictionary<int, string> data = new Dictionary<int, string>();
         
         public string Get(int x, int y)
         {
