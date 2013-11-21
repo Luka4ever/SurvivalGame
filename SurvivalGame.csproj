@@ -64,6 +64,9 @@
     <Compile Include="src\MetaCollection.cs" />
     <Compile Include="src\Options.cs" />
     <Compile Include="src\Tile.cs" />
+    <Compile Include="src\Tiles\DirtTile.cs" />
+    <Compile Include="src\Tiles\GrassTile.cs" />
+    <Compile Include="src\Tiles\SandTile.cs" />
     <Compile Include="src\Tiles\WaterTile.cs" />
     <Compile Include="src\Unit.cs" />
     <Compile Include="src\View.cs" />

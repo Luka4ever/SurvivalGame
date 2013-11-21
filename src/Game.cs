@@ -18,7 +18,7 @@ namespace SurvivalGame.src
 
         private float fps;
         private int lastFrameTime;
-        private float fpsSmoothing = 1f;
+        private float fpsSmoothing = 0.05f;
         private int frameCountSkipped;
         private void UpdateFPS()
         {
@@ -26,7 +26,7 @@ namespace SurvivalGame.src
             int difference = this.lastFrameTime - time;
             if (difference > 0)
             {
-                this.fps = (this.fpsSmoothing < 1 ? this.fps / (1f - this.fpsSmoothing) : 0) + 1000 / ((float)difference / (float) (this.frameCountSkipped + 1) * this.fpsSmoothing);
+                this.fps = (this.fpsSmoothing < 1 ? this.fps / (1f - this.fpsSmoothing) : 0) + 1000 / ((float)difference / (float)(this.frameCountSkipped + 1) * this.fpsSmoothing);
                 this.lastFrameTime = time;
                 this.frameCountSkipped = 0;
             }
@@ -59,11 +59,11 @@ namespace SurvivalGame.src
 
             while (this.running)
             {
-                int timeDraw = this.lastFrameTime - DateTime.Now.Millisecond;
+                int timeDraw = DateTime.Now.Millisecond - this.lastFrameTime;
                 int minimumDraw = 0;
-                int timeTick = this.lastGameTick - DateTime.Now.Millisecond;
+                int timeTick = DateTime.Now.Millisecond - this.lastGameTick;
                 int minimumTick = (int)Math.Floor(1000f / (float)targetTickRate);
-                System.Windows.Forms.Application.DoEvents();
+                Application.DoEvents();
                 //Input
                 Input(inputQueue);
                 //Tick
@@ -86,13 +86,18 @@ namespace SurvivalGame.src
                 }
                 System.Threading.Thread.Sleep(1);
             }
-            Application.Exit();
         }
 
         private void Draw(BufferedGraphics buffer, float delta)
         {
+            for (int y = 0; y < Chunk.size; y++)
+            {
+                for (int x = 0; x < Chunk.size; x++)
+                {
+                    //this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
+                }
+            }
             UpdateFPS();
-            Console.WriteLine(fps);
             this.window.Refresh();
             this.world.Draw(buffer.Graphics, this.view);
             buffer.Render();
@@ -113,6 +118,16 @@ namespace SurvivalGame.src
                 {
                     this.running = false;
                     Application.Exit();
+                }
+                else if (key.KeyCode == Keys.A && !key.Handled)
+                {
+                    for (int y = 0; y < Chunk.size; y++)
+                    {
+                        for (int x = 0; x < Chunk.size; x++)
+                        {
+                            //this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
+                        }
+                    }
                 }
             }
         }

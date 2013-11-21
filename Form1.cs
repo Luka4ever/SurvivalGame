@@ -16,6 +16,7 @@ namespace SurvivalGame
         private static readonly string properties = "properties.json";
         private Queue<KeyEventArgs> inputQueue;
         private Options options;
+        private Game game;
 
         public Form1()
         {
@@ -25,21 +26,9 @@ namespace SurvivalGame
             this.Visible = true;
             this.KeyPreview = true;
             this.inputQueue = new Queue<KeyEventArgs>();
-            Game game = new Game(new Random().Next(), this, options);
-            //this.Invalidate();
-            game.Run(BufferedGraphicsManager.Current.Allocate(CreateGraphics(), this.ClientRectangle), this.inputQueue);
+            this.game = new Game(new Random().Next(), this, options);
+            this.game.Run(BufferedGraphicsManager.Current.Allocate(CreateGraphics(), this.ClientRectangle), this.inputQueue);
             options.Save(properties);
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-
-        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            this.Close();
-            Application.Exit();
-            Application.ExitThread();
         }
 
         private void Init()
@@ -50,6 +39,11 @@ namespace SurvivalGame
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            this.inputQueue.Enqueue(e);
+        }
+
+        private void Form1_KeyPress(object sender, KeyEventArgs e)
         {
             this.inputQueue.Enqueue(e);
         }

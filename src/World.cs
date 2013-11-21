@@ -30,5 +30,36 @@ namespace SurvivalGame.src
                 this.chunks[i].Draw(g, view, this);
             }
         }
+
+        public int GetTile(int x, int y)
+        {
+            int X = (int)Math.Floor((decimal)x / (decimal)Chunk.size);
+            int Y = (int)Math.Floor((decimal)y / (decimal)Chunk.size);
+            for (int i = 0, l = this.chunks.Count; i < l; i++)
+            {
+                Chunk chunk = this.chunks[i];
+                if (chunk.X == X && chunk.Y == Y)
+                {
+                    return chunk.GetTile(x, y);
+                }
+            }
+            return 0;
+        }
+
+        public bool SetTile(int x, int y, int type)
+        {
+            int X = (int)Math.Floor((decimal)x / (decimal)Chunk.size);
+            int Y = (int)Math.Floor((decimal)y / (decimal)Chunk.size);
+            for (int i = 0, l = this.chunks.Count; i < l; i++)
+            {
+                Chunk chunk = this.chunks[i];
+                if (chunk.X == X && chunk.Y == Y)
+                {
+                    chunk.SetTile(x, y, type);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

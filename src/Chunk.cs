@@ -43,6 +43,12 @@ namespace SurvivalGame.src
             return this.tiles[this.ToIndex(x, y)];
         }
 
+        public void SetTile(int x, int y, int type)
+        {
+            this.Localize(ref x, ref y);
+            this.tiles[this.ToIndex(x, y)] = type;
+        }
+
         public void Tick(World world)
         {
 
