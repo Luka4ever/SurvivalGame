@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SurvivalGame.src
 {
@@ -16,20 +11,28 @@ namespace SurvivalGame.src
         [JsonProperty("LimitFPS")]
         public bool LimitFPS = true;
 
-        public Options(string path)
+        public static Options Load(string path)
         {
             if (File.Exists(@path))
             {
-                JsonConvert.DeserializeObject<Options>(File.ReadAllText(@path));
+                return JsonConvert.DeserializeObject<Options>(File.ReadAllText(@path));
             }
+            return new Options();
         }
 
         public void Save(string path)
         {
-            FileStream file = File.OpenWrite(@path);
-            byte[] buffer = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(this));
-            file.WriteAsync(buffer, 0, buffer.Length);
-            file.Close();
+            System.IO.File.WriteAllText(@path, JsonConvert.SerializeObject(this));
+            /*
+            UnicodeEncoding uniencoding = new UnicodeEncoding();
+            byte[] buffer = uniencoding.GetBytes(JsonConvert.SerializeObject(this));
+            
+            using (FileStream SourceStream = File.Open(path, FileMode.OpenOrCreate))
+            {
+                SourceStream.Seek(0, 0);
+                SourceStream.Write(buffer, 0, buffer.Length);
+            }
+             * */
         }
     }
 }

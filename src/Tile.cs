@@ -56,5 +56,10 @@ namespace SurvivalGame.src
         {
             return tiles[index];
         }
+
+        public virtual float GetFriction()
+        {
+            return this.friction;
+        }
     }
 }

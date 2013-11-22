@@ -17,13 +17,14 @@ namespace SurvivalGame.src
         private Options options;
 
         private float fps;
-        private int lastFrameTime;
+        private double lastFrameTime;
         private float fpsSmoothing = 0.05f;
         private int frameCountSkipped;
         private void UpdateFPS()
         {
-            int time = DateTime.Now.Millisecond;
-            int difference = this.lastFrameTime - time;
+            TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            double time = span.TotalMilliseconds;
+            double difference = time - this.lastFrameTime;
             if (difference > 0)
             {
                 this.fps = (this.fpsSmoothing < 1 ? this.fps / (1f - this.fpsSmoothing) : 0) + 1000 / ((float)difference / (float)(this.frameCountSkipped + 1) * this.fpsSmoothing);
@@ -36,7 +37,7 @@ namespace SurvivalGame.src
             }
         }
 
-        private int lastGameTick;
+        private double lastGameTick;
         private int targetTickRate;
 
         public Game(int seed, Form window, Options options)
@@ -50,18 +51,20 @@ namespace SurvivalGame.src
 
         public void Run(BufferedGraphics buffer, Queue<KeyEventArgs> inputQueue)
         {
+            TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
             this.running = true;
-            this.lastGameTick = DateTime.Now.Millisecond;
-            this.lastFrameTime = DateTime.Now.Millisecond;
+            this.lastGameTick = span.TotalMilliseconds;
+            this.lastFrameTime = span.TotalMilliseconds;
             this.fps = 0;
             this.frameCountSkipped = 0;
             this.targetTickRate = 20;
 
             while (this.running)
             {
-                int timeDraw = DateTime.Now.Millisecond - this.lastFrameTime;
+                span = DateTime.UtcNow - new DateTime(1970, 1, 1);
+                double timeDraw = span.TotalMilliseconds;
                 int minimumDraw = 0;
-                int timeTick = DateTime.Now.Millisecond - this.lastGameTick;
+                double timeTick = span.TotalMilliseconds - this.lastGameTick;
                 int minimumTick = (int)Math.Floor(1000f / (float)targetTickRate);
                 Application.DoEvents();
                 //Input
@@ -69,7 +72,7 @@ namespace SurvivalGame.src
                 //Tick
                 if (timeTick > minimumTick)
                 {
-                    if (timeTick > minimumTick * 2)
+                    if (timeTick > this.lastGameTick + minimumTick * 2)
                     {
                         Console.WriteLine("Skipping Ticks!");
                     }
@@ -80,7 +83,7 @@ namespace SurvivalGame.src
                 {
                     minimumDraw = (int) Math.Floor(1000f / (float) this.options.MaxFPS);
                 }
-                if (timeDraw > minimumDraw)
+                if (timeDraw > this.lastFrameTime + minimumDraw)
                 {
                     Draw(buffer, 1000f / (float) timeDraw);
                 }
@@ -94,42 +97,46 @@ namespace SurvivalGame.src
             {
                 for (int x = 0; x < Chunk.size; x++)
                 {
-                    //this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
+                    this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
                 }
             }
             UpdateFPS();
-            this.window.Refresh();
             this.world.Draw(buffer.Graphics, this.view);
             buffer.Render();
         }
 
         private void Tick(float delta)
         {
-            this.lastGameTick = DateTime.Now.Millisecond;
+            TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            this.lastGameTick = span.TotalMilliseconds;
         }
 
         private void Input(Queue<KeyEventArgs> inputQueue)
         {
-            if (inputQueue.Count > 0) this.running = false;
             while (inputQueue.Count > 0)
             {
+                Console.WriteLine("test");
                 KeyEventArgs key = inputQueue.Dequeue();
                 if (key.KeyCode == Keys.Escape)
                 {
                     this.running = false;
-                    Application.Exit();
                 }
-                else if (key.KeyCode == Keys.A && !key.Handled)
+                else if (key.KeyCode == Keys.A)
                 {
                     for (int y = 0; y < Chunk.size; y++)
                     {
                         for (int x = 0; x < Chunk.size; x++)
                         {
-                            //this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
+                            this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
                         }
                     }
                 }
             }
+        }
+
+        public void Exit()
+        {
+            this.running = false;
         }
     }
 }

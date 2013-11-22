@@ -24,7 +24,7 @@ namespace SurvivalGame.src
             this.y = y;
             this.entities = new List<Entity>();
             this.meta = new MetaCollection();
-            this.pathing = new int[size * size, size * size];
+            //this.CalcPathing();
         }
 
         public int X
@@ -79,11 +79,6 @@ namespace SurvivalGame.src
             return this.meta.Get(x, y);
         }
 
-        public void CalcPathing()
-        {
-
-        }
-
         public int GetDistance(int x1, int y1, int x2, int y2)
         {
             this.Localize(ref x1, ref y1);
@@ -94,6 +89,90 @@ namespace SurvivalGame.src
         public int ToIndex(int x, int y)
         {
             return y * size + x;
+        }
+
+        public void CalcPathing()
+        {
+            int l = size * size;
+            this.pathing = new int[l, l];
+            for (int k = 0; k < l; k++)
+            {
+                for (int i = 0; i < l; i++)
+                {
+                    this.pathing[k, i] = int.MaxValue;
+                }
+                this.pathing[k, k] = 0;
+            }
+            //add the weight of the edges
+            for (int v = 0, y = 0, u, x; y < size; y++)
+            {
+                for (x = 0; x < size; x++, v++)
+                {
+                    if (y > 0)
+                    {
+                        if (x > 0)
+                        {
+                            u = v - size - 1;
+                            this.pathing[v, u] = this.pathing[u, v];
+                        }
+                        u = v - size;
+                        this.pathing[v, u] = this.pathing[u, v];
+                        if (x < size - 1)
+                        {
+                            u = v - size + 1;
+                            this.pathing[v, u] = this.pathing[u, v];
+                        }
+                    }
+                    if (x > 0)
+                    {
+                        u = v - 1;
+                        this.pathing[v, u] = this.pathing[u, v];
+                    }
+                    if (x < size - 1)
+                    {
+                        u = v + 1;
+                        this.pathing[v, u] = this.WeightEdgeLocal(x, y, x + 1, y);
+                    }
+                    if (y < size - 1)
+                    {
+                        if (x > 0)
+                        {
+                            u = v + size - 1;
+                            this.pathing[v, u] = this.WeightEdgeLocal(x, y, x - 1, y + 1);
+                        }
+                        u = v + size;
+                        this.pathing[v, u] = this.WeightEdgeLocal(x, y, x, y + 1);
+                        if (x < size - 1)
+                        {
+                            u = v + size + 1;
+                            this.pathing[v, u] = this.WeightEdgeLocal(x, y, x + 1, y + 1);
+                        }
+                    }
+                }
+            }
+            for (int k = 0, i, j, m; k < l; k++)
+            {
+                for (i = 0; i < l; i++)
+                {
+                    for (j = 0; j < l; j++)
+                    {
+                        if ((m = this.pathing[i, k] + this.pathing[k, j]) < this.pathing[i, j])
+                        {
+                            this.pathing[i, j] = m;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Pathing done");
+        }
+
+        private int WeightEdgeLocal(int x1, int y1, int x2, int y2)
+        {
+            float friction1 = Tile.GetTile(this.tiles[this.ToIndex(x1, y1)]).GetFriction();
+            float friction2 = Tile.GetTile(this.tiles[this.ToIndex(x2, y2)]).GetFriction();
+            float dist = (float) (Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2)) / 2d);
+            float weight = (float) ((Math.Pow(Math.Sin(friction1 / 2d * Math.PI), 2) * dist + Math.Pow(Math.Sin(friction2 / 2d * Math.PI), 2) * dist) * 10d);
+            return (int) Math.Min(Math.Max(Math.Round(weight), 0), 10);
         }
     }
 }
