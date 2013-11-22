@@ -27,7 +27,8 @@ namespace SurvivalGame.src
             double difference = time - this.lastFrameTime;
             if (difference > 0)
             {
-                this.fps = (this.fpsSmoothing < 1 ? this.fps / (1f - this.fpsSmoothing) : 0) + 1000 / ((float)difference / (float)(this.frameCountSkipped + 1) * this.fpsSmoothing);
+                this.fps = this.fps * (1f - this.fpsSmoothing) + 1000 / ((float)difference / (float)(this.frameCountSkipped + 1)) * this.fpsSmoothing;
+                Console.WriteLine(fps);
                 this.lastFrameTime = time;
                 this.frameCountSkipped = 0;
             }
