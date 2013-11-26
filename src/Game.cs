@@ -76,7 +76,7 @@ namespace SurvivalGame.src
                     {
                         Console.WriteLine("Skipping Ticks!");
                     }
-                    Tick(1000f / (float) timeTick);
+                    Tick((float) timeTick / 1000f);
                 }
                 //Draw
                 if (this.options.LimitFPS)

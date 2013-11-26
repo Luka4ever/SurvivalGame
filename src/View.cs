@@ -29,6 +29,9 @@ namespace SurvivalGame.src
             this.view.X += (int)Math.Round(Math.Cos(dir) * force * delta);
             this.view.Y += (int)Math.Round(Math.Sin(dir) * force * delta);
             */
+            int t = (int)Math.Round(1d * (double)delta);
+            this.view.X += t;
+            //this.view.X += 1;
             switch (this.strategy)
             {
                 case Strategy.Fixed:

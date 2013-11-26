@@ -16,9 +16,11 @@ namespace SurvivalGame.src
         private List<Chunk> active;
         private Thread thread;
         private Queue<WorkTask> tasks;
+        private float unload;
 
         public ChunkManager(string saveFilePath)
         {
+            this.unload = 0;
             this.saveFilePath = saveFilePath;
             this.chunks = new List<Chunk>();
             this.active = new List<Chunk>();
@@ -29,6 +31,11 @@ namespace SurvivalGame.src
 
         public void Tick(World world, float delta)
         {
+            if ((this.unload += delta) > 1)
+            {
+                this.unload = 0;
+
+            }
             foreach (Chunk chunk in this.active)
             {
                 chunk.Tick(world, delta);
@@ -56,7 +63,7 @@ namespace SurvivalGame.src
                 WorkTask task = tasks.Dequeue();
                 if (task.load)
                 {
-                    Console.WriteLine("Loading chunk");
+                    Console.WriteLine("Loading chunk [x: {0}, y: {1}]", task.x, task.y);
                     await this.LoadChunk(saveFile, task.x, task.y, task.seed);
                 }
                 else
@@ -73,6 +80,12 @@ namespace SurvivalGame.src
             {
                 if (task.x == x && task.y == y)
                 {
+                    if (!task.load)
+                    {
+                        Queue<WorkTask> queue = new Queue<WorkTask>(this.tasks.Count);
+                        if (!task.Equals(this.tasks.Peek())) queue.Enqueue(this.tasks.Dequeue());
+                        this.tasks = queue;
+                    }
                     return;
                 }
             }
@@ -90,6 +103,12 @@ namespace SurvivalGame.src
             {
                 if (task.x == x && task.y == y)
                 {
+                    if (task.load)
+                    {
+                        Queue<WorkTask> queue = new Queue<WorkTask>(this.tasks.Count);
+                        if (!task.Equals(this.tasks.Peek())) queue.Enqueue(this.tasks.Dequeue());
+                        this.tasks = queue;
+                    }
                     return;
                 }
             }
