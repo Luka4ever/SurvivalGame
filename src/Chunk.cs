@@ -49,12 +49,12 @@ namespace SurvivalGame.src
             this.tiles[this.ToIndex(x, y)] = type;
         }
 
-        public void Tick(World world)
+        public void Tick(World world, float delta)
         {
 
         }
 
-        public void Draw(Graphics g, View view, World world)
+        public void Draw(Graphics g, View view, World world, float delta)
         {
             int X = this.x * size;
             int Y = this.y * size;
@@ -173,6 +173,20 @@ namespace SurvivalGame.src
             float dist = (float) (Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2)) / 2d);
             float weight = (float) ((Math.Pow(Math.Sin(friction1 / 2d * Math.PI), 2) * dist + Math.Pow(Math.Sin(friction2 / 2d * Math.PI), 2) * dist) * 10d);
             return (int) Math.Min(Math.Max(Math.Round(weight), 0), 10);
+        }
+
+        public Chunk Generate(int seed)
+        {
+            //TODO: Generation code
+            Random random = new Random();
+            for (int y = 0; y < Chunk.size; y++)
+            {
+                for (int x = 0; x < Chunk.size; x++)
+                {
+                    this.tiles[this.ToIndex(x, y)] = random.Next(1, 5);
+                }
+            }
+            return this;
         }
     }
 }

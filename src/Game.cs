@@ -43,13 +43,13 @@ namespace SurvivalGame.src
         public Game(int seed, Form window, Options options)
         {
             this.window = window;
-            this.world = new World(seed);
+            this.world = new World(seed, @"saves/save.csf");
             this.view = new View(window);
             this.running = false;
             this.options = options;
         }
 
-        public void Run(BufferedGraphics buffer, Queue<KeyEventArgs> inputQueue)
+        public void Run(BufferedGraphics buffer, Queue<KeyEvent> inputQueue)
         {
             TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
             this.running = true;
@@ -93,15 +93,8 @@ namespace SurvivalGame.src
 
         private void Draw(BufferedGraphics buffer, float delta)
         {
-            for (int y = 0; y < Chunk.size; y++)
-            {
-                for (int x = 0; x < Chunk.size; x++)
-                {
-                    this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
-                }
-            }
             UpdateFPS();
-            this.world.Draw(buffer.Graphics, this.view);
+            this.world.Draw(buffer.Graphics, this.view, delta);
             buffer.Render();
         }
 
@@ -109,25 +102,27 @@ namespace SurvivalGame.src
         {
             TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
             this.lastGameTick = span.TotalMilliseconds;
+            this.world.Tick(delta);
+            this.view.Tick(delta);
         }
 
-        private void Input(Queue<KeyEventArgs> inputQueue)
+        private void Input(Queue<KeyEvent> inputQueue)
         {
             while (inputQueue.Count > 0)
             {
-                Console.WriteLine("test");
-                KeyEventArgs key = inputQueue.Dequeue();
+                KeyEvent key = inputQueue.Dequeue();
                 if (key.KeyCode == Keys.Escape)
                 {
                     this.running = false;
                 }
-                else if (key.KeyCode == Keys.A)
+                else if (key.KeyCode == Keys.A && key.KeyDown)
                 {
+                    key.Handled = true;
                     for (int y = 0; y < Chunk.size; y++)
                     {
                         for (int x = 0; x < Chunk.size; x++)
                         {
-                            this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 4);
+                            this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 5);
                         }
                     }
                 }

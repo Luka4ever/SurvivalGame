@@ -22,6 +22,13 @@ namespace SurvivalGame.src
 
         public void Tick(float delta)
         {
+            //test code to move the view around
+            /*
+            double dir = new Random().NextDouble();
+            double force = new Random().NextDouble() * 1;
+            this.view.X += (int)Math.Round(Math.Cos(dir) * force * delta);
+            this.view.Y += (int)Math.Round(Math.Sin(dir) * force * delta);
+            */
             switch (this.strategy)
             {
                 case Strategy.Fixed:
