@@ -49,7 +49,7 @@ namespace SurvivalGame.src
             tiles.Add(new WaterTile(ImageManager.RegisterImage(@"res/Tiles/water1.png"), "Water", 0.5f));
             tiles.Add(new GrassTile(ImageManager.RegisterImage(@"res/Tiles/grass1.png"), "Grass", 0.9f));
             tiles.Add(new DirtTile(ImageManager.RegisterImage(@"res/Tiles/dirt1.png"), "Dirt", 0.9f));
-            tiles.Add(new SandTile(ImageManager.RegisterImage(@"res/Tiles/sand1.png"), "sand", 0.9f));
+            tiles.Add(new SandTile(ImageManager.RegisterImage(@"res/Tiles/sand1.png"), "sand", 0.7f));
         }
 
         public static Tile GetTile(int index)

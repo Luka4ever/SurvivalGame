@@ -37,13 +37,13 @@ namespace SurvivalGame.src
 
         public void Draw(Graphics g, View view, float delta)
         {
-            int y = view.GetY() / (Chunk.size * Tile.size) - 2;
-            int my = y + (int) Math.Ceiling(g.VisibleClipBounds.Height / (Chunk.size * Tile.size)) + 3;
-            for (; y <= my; y++)
+            int sy = view.GetY() / (Chunk.size * Tile.size) - 2;
+            int my = sy + (int) Math.Ceiling(g.VisibleClipBounds.Height / (Chunk.size * Tile.size)) + 3;
+            int sx = view.GetX() / (Chunk.size * Tile.size) - 2;
+            int mx = sx + (int)Math.Ceiling(g.VisibleClipBounds.Width / (Chunk.size * Tile.size)) + 3;
+            for (int y = sy; y <= my; y++)
             {
-                int x = view.GetX() / (Chunk.size * Tile.size) - 2;
-                int mx = x + (int)Math.Ceiling(g.VisibleClipBounds.Width / (Chunk.size * Tile.size)) + 3;
-                for (; x <= mx; x++)
+                for (int x = sx; x <= mx; x++)
                 {
                     Chunk chunk = this.chunkManager.GetChunk(x, y);
                     if (chunk == null)
@@ -53,6 +53,17 @@ namespace SurvivalGame.src
                     else
                     {
                         chunk.Draw(g, view, this, delta);
+                    }
+                }
+            }
+            for (int y = sy; y <= my; y++)
+            {
+                for (int x = sx; x < mx; x++)
+                {
+                    Chunk chunk = this.chunkManager.GetChunk(x, y);
+                    if (chunk != null)
+                    {
+                        chunk.DrawEntities(g, view, this, delta);
                     }
                 }
             }

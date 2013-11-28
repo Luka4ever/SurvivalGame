@@ -68,18 +68,22 @@ namespace SurvivalGame.src
                     Tile.GetTile(this.tiles[this.ToIndex(x, y)]).Draw(g, view, world, X + x, Y + y);
                 }
             }
-            List<Entity>[] stuff = new List<Entity>[size];
+        }
+
+        public void DrawEntities(Graphics g, View view, World world, float delta)
+        {
+            List<Entity>[] entities = new List<Entity>[size];
             for (int y = 0; y < size; y++)
             {
-                stuff[y] = new List<Entity>(5);
+                entities[y] = new List<Entity>(5);
             }
             foreach (Entity entity in this.entities)
             {
-                stuff[(entity.Y + Chunk.size) % Chunk.size].Add(entity);
+                entities[(entity.Y % Chunk.size + Chunk.size) % Chunk.size].Add(entity);
             }
             for (int y = 0; y < size; y++)
             {
-                foreach (Entity entity in stuff[y])
+                foreach (Entity entity in entities[y])
                 {
                     entity.Draw(g, view, world, delta);
                 }
@@ -107,7 +111,7 @@ namespace SurvivalGame.src
 
         public int ToIndex(int x, int y)
         {
-            return y * size + x;
+            return (y + Chunk.size) % Chunk.size * size + (x + Chunk.size) % Chunk.size;
         }
 
         public void CalcPathing()
@@ -194,15 +198,16 @@ namespace SurvivalGame.src
             return (int) Math.Min(Math.Max(Math.Round(weight), 0), 10);
         }
 
-        public Chunk Generate(int seed)
+        public Chunk Generate(double seed)
         {
+            seed = seed / 1000;
             for (int y = 0; y < Chunk.size; y++)
             {
                 for (int x = 0; x < Chunk.size; x++)
                 {
-                    float biomeSeed = (float)Math.Floor((double)((long)seed * (long)13 / (long)6 % (long)Int32.MaxValue));
-                    float biomeNoise = Noise.GetNoise((double)x / 32, (double)y / 32, biomeSeed);
-                    float localNoise = Noise.GetNoise((double)x/ 32, (double)y / 32, seed);
+                    float biomeSeed = (float)Math.Floor((double)(seed * (long)13 / (long)6 % (long)Int32.MaxValue));
+                    float biomeNoise = Noise.GetNoise((double)(x + this.x * Chunk.size) / 32, (double)(y + this.y * Chunk.size) / 32, biomeSeed);
+                    float localNoise = Noise.GetNoise((double)(x + this.x * Chunk.size) / 32, (double)(y + this.y * Chunk.size) / 32, seed);
 
                     this.tiles[this.ToIndex(x, y)] = 1; 
                     if (localNoise > 0.3) { this.tiles[this.ToIndex(x, y)] = 2; }

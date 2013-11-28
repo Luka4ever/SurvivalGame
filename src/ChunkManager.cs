@@ -70,7 +70,7 @@ namespace SurvivalGame.src
         {
             //DO NOT SET DEBUG POINTS IN THIS METHOD
             //it will crash
-            FileStream saveFile;
+            FileStream saveFile = null;
             byte[] buffer;
             if (!File.Exists(this.saveFilePath))
             {
@@ -80,7 +80,19 @@ namespace SurvivalGame.src
             }
             else
             {
-                saveFile = File.Open(this.saveFilePath, FileMode.Open);
+                bool loaded = false;
+                while (!loaded)
+                {
+                    try
+                    {
+                        saveFile = File.Open(this.saveFilePath, FileMode.Open);
+                        loaded = true;
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
             }
             while (tasks.Count > 0)
             {
