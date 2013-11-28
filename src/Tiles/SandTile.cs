@@ -8,7 +8,7 @@ namespace SurvivalGame.src.Tiles
 {
     class SandTile : Tile
     {
-        public SandTile(int image, string name, float friction) : base(image, name, friction)
+        public SandTile(int image, string name, float friction, int id) : base(image, name, friction, id)
         {
 
         }

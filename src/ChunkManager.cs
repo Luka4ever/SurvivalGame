@@ -88,7 +88,7 @@ namespace SurvivalGame.src
                         saveFile = File.Open(this.saveFilePath, FileMode.Open);
                         loaded = true;
                     }
-                    catch (Exception e)
+                    catch
                     {
 
                     }

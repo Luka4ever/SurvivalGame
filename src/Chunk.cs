@@ -59,13 +59,21 @@ namespace SurvivalGame.src
 
         public void Draw(Graphics g, View view, World world, float delta)
         {
+            Chunk cUp = world.GetChunk(this.x, this.y - 1);
+            Chunk cDown = world.GetChunk(this.x, this.y + 1);
+            Chunk cLeft = world.GetChunk(this.x - 1, this.y);
+            Chunk cRight = world.GetChunk(this.x + 1, this.y);
             int X = this.x * size;
             int Y = this.y * size;
             for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
                 {
-                    Tile.GetTile(this.tiles[this.ToIndex(x, y)]).Draw(g, view, world, X + x, Y + y);
+                    int up = (y > 0 ? this.tiles[this.ToIndex(x, y - 1)] : (cUp == null ? 0 : cUp.GetTile(x, y - 1)));
+                    int down = (y < Chunk.size - 1 ? this.tiles[this.ToIndex(x, y + 1)] : (cDown == null ? 0 : cDown.GetTile(x, y + 1)));
+                    int left = (x > 0 ? this.tiles[this.ToIndex(x - 1, y)] : (cLeft == null ? 0 : cLeft.GetTile(x - 1, y)));
+                    int right = (x < Chunk.size - 1 ? this.tiles[this.ToIndex(x + 1, y)] : (cRight == null ? 0 : cRight.GetTile(x + 1, y)));
+                    Tile.GetTile(this.tiles[this.ToIndex(x, y)]).Draw(g, view, world, X + x, Y + y, up, down, left, right);
                 }
             }
         }
