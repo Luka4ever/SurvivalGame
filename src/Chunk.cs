@@ -196,13 +196,18 @@ namespace SurvivalGame.src
 
         public Chunk Generate(int seed)
         {
-            //TODO: Generation code
-            Random random = new Random();
             for (int y = 0; y < Chunk.size; y++)
             {
                 for (int x = 0; x < Chunk.size; x++)
                 {
-                    this.tiles[this.ToIndex(x, y)] = random.Next(1, 5);
+                    float biomeSeed = (float)Math.Floor((double)((long)seed * (long)13 / (long)6 % (long)Int32.MaxValue));
+                    float biomeNoise = Noise.GetNoise((double)x / 32, (double)y / 32, biomeSeed);
+                    float localNoise = Noise.GetNoise((double)x/ 32, (double)y / 32, seed);
+
+                    this.tiles[this.ToIndex(x, y)] = 1; 
+                    if (localNoise > 0.3) { this.tiles[this.ToIndex(x, y)] = 2; }
+                    if (localNoise > 0.5) { this.tiles[this.ToIndex(x, y)] = 3; }
+                    if (localNoise > 0.7) { this.tiles[this.ToIndex(x, y)] = 4; }
                 }
             }
             return this;
