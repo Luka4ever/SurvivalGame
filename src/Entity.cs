@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SurvivalGame.src.Entities;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -7,21 +9,157 @@ namespace SurvivalGame.src
 {
     class Entity
     {
-        private int x;
-        private int y;
-        private float velocity;
-        private float acceleration;
-        private byte direction;
-        private float progress;
+        protected int x;
+        protected int y;
+        protected int image;
+        protected float speed;
+        protected byte direction;
+        protected float progress;
+        public enum Direction { North = 0, NorthEast = 1, East = 2, SouthEast = 3, South = 4, SouthWest = 5, West = 6, NorthWest = 7 }
+        protected byte control;
 
-        public virtual void Tick(World world)
+        public Entity(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+            this.speed = 0;
+            this.direction = 0;
+            this.progress = 0;
+            this.control = 0;
+        }
+
+        public float GetProgress()
+        {
+            return this.progress;
+        }
+
+        public Direction GetDirection()
+        {
+            return (Direction)this.direction;
+        }
+
+        public void MoveUp()
+        {
+            byte data = (byte)(this.control >> 2 & 0x03);
+            bool set = data >> 1 == 1;
+            bool up = (data & 0x01) == 1;
+            if (!up && set)
+            {
+                set = false;
+            }
+            else
+            {
+                up = true;
+                set = true;
+            }
+            data = 0;
+            if (set)
+            {
+                data += 2;
+            }
+            if (up)
+            {
+                data += 1;
+            }
+            this.control = (byte)(this.control & 0xf3 | (data << 2));
+        }
+
+        public void MoveDown()
+        {
+            byte data = (byte)(this.control >> 2 & 0x03);
+            bool set = data >> 1 == 1;
+            bool up = (data & 0x01) == 1;
+            if (up && set)
+            {
+                set = false;
+            }
+            else
+            {
+                up = false;
+                set = true;
+            }
+            data = 0;
+            if (set)
+            {
+                data += 2;
+            }
+            if (up)
+            {
+                data += 1;
+            }
+            this.control = (byte)(this.control & 0xf3 | (data << 2));
+        }
+
+        public void MoveLeft()
+        {
+            byte data = (byte)(this.control & 0x03);
+            bool set = data >> 1 == 1;
+            bool left = (data & 0x01) == 1;
+            if (!left && set)
+            {
+                set = false;
+            }
+            else
+            {
+                left = true;
+                set = true;
+            }
+            data = 0;
+            if (set)
+            {
+                data += 2;
+            }
+            if (left)
+            {
+                data += 1;
+            }
+            this.control = (byte)(this.control & 0xfc | data);
+        }
+
+        public void MoveRight()
+        {
+            byte data = (byte)(this.control & 0x03);
+            bool set = data >> 1 == 1;
+            bool left = (data & 0x01) == 1;
+            if (left && set)
+            {
+                set = false;
+            }
+            else
+            {
+                left = false;
+                set = true;
+            }
+            data = 0;
+            if (set)
+            {
+                data += 2;
+            }
+            if (left)
+            {
+                data += 1;
+            }
+            this.control = (byte)(this.control & 0xfc | data);
+        }
+
+        public virtual void Tick(World world, float delta)
         {
 
         }
 
-        public virtual void Draw()
+        public virtual void Draw(Graphics g, View view, World world, float delta)
         {
+            this.Draw(g, view, world, delta, image);
+        }
 
+        protected virtual void Draw(Graphics g, View view, World world, float delta, int image)
+        {
+            g.DrawImage(ImageManager.GetImage(image), this.x * Tile.size - view.GetX(), this.y * Tile.size - Tile.size / 4 - view.GetY());
+        }
+
+        public static void Init()
+        {
+            Human.Init(ImageManager.RegisterImage(@"res/Entities/Human.png"));
         }
 
         public int X
@@ -44,6 +182,16 @@ namespace SurvivalGame.src
         public int AddY(int y)
         {
             return this.y += y;
+        }
+
+        public virtual int GetVisualX()
+        {
+            return this.x * Tile.size;
+        }
+
+        public virtual int GetVisualY()
+        {
+            return this.y * Tile.size;
         }
     }
 }

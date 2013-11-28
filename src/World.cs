@@ -1,8 +1,10 @@
-﻿using System;
+﻿using SurvivalGame.src.Entities;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace SurvivalGame.src
 {
@@ -10,11 +12,22 @@ namespace SurvivalGame.src
     {
         private int seed;
         private ChunkManager chunkManager;
+        private Unit player;
 
         public World(int seed, string saveFilePath)
         {
             this.seed = seed;
             this.chunkManager = new ChunkManager(saveFilePath);
+            this.chunkManager.Load(0, 0, seed);
+            this.player = new Human(0, 0);
+            Chunk chunk;
+            do
+            {
+                Thread.Sleep(1);
+                chunk = this.chunkManager.GetChunk(0, 0);
+            }
+            while (chunk == null);
+            chunk.AddEntity(this.player);
         }
 
         public int Seed
@@ -24,12 +37,12 @@ namespace SurvivalGame.src
 
         public void Draw(Graphics g, View view, float delta)
         {
-            int y = view.GetY() / (Chunk.size * Tile.size) - 1;
-            int my = y + (int) Math.Ceiling(g.VisibleClipBounds.Height / (Chunk.size * Tile.size)) + 1;
+            int y = view.GetY() / (Chunk.size * Tile.size) - 2;
+            int my = y + (int) Math.Ceiling(g.VisibleClipBounds.Height / (Chunk.size * Tile.size)) + 3;
             for (; y <= my; y++)
             {
-                int x = view.GetX() / (Chunk.size * Tile.size) - 1;
-                int mx = x + (int)Math.Ceiling(g.VisibleClipBounds.Width / (Chunk.size * Tile.size)) + 1;
+                int x = view.GetX() / (Chunk.size * Tile.size) - 2;
+                int mx = x + (int)Math.Ceiling(g.VisibleClipBounds.Width / (Chunk.size * Tile.size)) + 3;
                 for (; x <= mx; x++)
                 {
                     Chunk chunk = this.chunkManager.GetChunk(x, y);
@@ -55,6 +68,11 @@ namespace SurvivalGame.src
             return this.chunkManager.GetTile(x, y);
         }
 
+        public Chunk GetChunk(int x, int y)
+        {
+            return this.chunkManager.GetChunk(x, y);
+        }
+
         public bool SetTile(int x, int y, int type)
         {
             int X = (int)Math.Floor((decimal)x / (decimal)Chunk.size);
@@ -66,6 +84,11 @@ namespace SurvivalGame.src
                 return true;
             }
             return false;
+        }
+
+        public Entity GetPlayer()
+        {
+            return this.player;
         }
     }
 }

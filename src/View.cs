@@ -15,26 +15,19 @@ namespace SurvivalGame.src
         private Strategy strategy;
         public enum Strategy { Fixed, Smooth, Snap }
 
-        public View(Form window)
+        public View(Form window, Entity target)
         {
             this.view = window.ClientRectangle;
+            this.target = target;
         }
 
         public void Tick(float delta)
         {
-            //test code to move the view around
-            /*
-            double dir = new Random().NextDouble();
-            double force = new Random().NextDouble() * 1;
-            this.view.X += (int)Math.Round(Math.Cos(dir) * force * delta);
-            this.view.Y += (int)Math.Round(Math.Sin(dir) * force * delta);
-            */
-            int t = (int)Math.Round(1d * (double)delta);
-            this.view.X += t;
-            //this.view.X += 1;
             switch (this.strategy)
             {
                 case Strategy.Fixed:
+                    this.view.X = this.target.GetVisualX() - this.view.Width / 2;
+                    this.view.Y = this.target.GetVisualY() - this.view.Height / 2;
                     break;
                 case Strategy.Smooth:
                     break;

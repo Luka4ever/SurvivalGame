@@ -34,11 +34,35 @@ namespace SurvivalGame.src
             if ((this.unload += delta) > 1)
             {
                 this.unload = 0;
-
+                foreach (Chunk chunk in this.chunks)
+                {
+                    if (this.GetChunk(chunk.X - 1, chunk.Y - 1) != null &&
+                        this.GetChunk(chunk.X, chunk.Y - 1) != null &&
+                        this.GetChunk(chunk.X + 1, chunk.Y - 1) != null &&
+                        this.GetChunk(chunk.X - 1, chunk.Y) != null &&
+                        this.GetChunk(chunk.X + 1, chunk.Y) != null &&
+                        this.GetChunk(chunk.X - 1, chunk.Y + 1) != null &&
+                        this.GetChunk(chunk.X, chunk.Y + 1) != null &&
+                        this.GetChunk(chunk.X + 1, chunk.Y + 1) != null)
+                    {
+                        if (!this.active.Contains(chunk))
+                        {
+                            this.active.Add(chunk);
+                        }
+                    }
+                    else if (this.active.Contains(chunk))
+                    {
+                        this.active.Remove(chunk);
+                    }
+                }
             }
             foreach (Chunk chunk in this.active)
             {
                 chunk.Tick(world, delta);
+            }
+            foreach (Chunk chunk in this.active)
+            {
+                chunk.CheckEntityPosition(world);
             }
         }
 
@@ -213,12 +237,12 @@ namespace SurvivalGame.src
 
         public int GetTile(int x, int y)
         {
-            Chunk chunk = this.GetChunk(x, y);
+            Chunk chunk = this.GetChunk((int)Math.Floor((double)x / (double)Chunk.size), (int)Math.Floor((double)y / (double)Chunk.size));
             if (chunk == null)
             {
                 return 0;
             }
-            return chunk.GetTile(x, y);
+            return chunk.GetTile((x + Chunk.size) % Chunk.size, (y + Chunk.size) % Chunk.size);
         }
 
         public Chunk GetChunk(int x, int y)

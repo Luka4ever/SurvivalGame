@@ -39,6 +39,7 @@ namespace SurvivalGame
         {
             Item.Init();
             Tile.Init();
+            Entity.Init();
             ImageManager.Close();
         }
 

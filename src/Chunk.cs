@@ -51,7 +51,10 @@ namespace SurvivalGame.src
 
         public void Tick(World world, float delta)
         {
-
+            foreach (Entity entity in this.entities)
+            {
+                entity.Tick(world, delta);
+            }
         }
 
         public void Draw(Graphics g, View view, World world, float delta)
@@ -63,6 +66,22 @@ namespace SurvivalGame.src
                 for (int x = 0; x < size; x++)
                 {
                     Tile.GetTile(this.tiles[this.ToIndex(x, y)]).Draw(g, view, world, X + x, Y + y);
+                }
+            }
+            List<Entity>[] stuff = new List<Entity>[size];
+            for (int y = 0; y < size; y++)
+            {
+                stuff[y] = new List<Entity>(5);
+            }
+            foreach (Entity entity in this.entities)
+            {
+                stuff[(entity.Y + Chunk.size) % Chunk.size].Add(entity);
+            }
+            for (int y = 0; y < size; y++)
+            {
+                foreach (Entity entity in stuff[y])
+                {
+                    entity.Draw(g, view, world, delta);
                 }
             }
         }
@@ -187,6 +206,39 @@ namespace SurvivalGame.src
                 }
             }
             return this;
+        }
+
+        public void AddEntity(Entity entity)
+        {
+            this.entities.Add(entity);
+        }
+
+        public bool RemoveEntity(Entity entity)
+        {
+            return this.entities.Remove(entity);
+        }
+
+        public void CheckEntityPosition(World world)
+        {
+            List<Entity> remove = new List<Entity>();
+            foreach (Entity entity in this.entities)
+            {
+                int x = (int)Math.Floor((double)entity.X / (double)Chunk.size);
+                int y = (int)Math.Floor((double)entity.Y / (double)Chunk.size);
+                if (this.x != x || this.y != y)
+                {
+                    Chunk chunk = world.GetChunk(x, y);
+                    if (chunk != null)
+                    {
+                        remove.Add(entity);
+                        chunk.AddEntity(entity);
+                    }
+                }
+            }
+            foreach (Entity entity in remove)
+            {
+                this.entities.Remove(entity);
+            }
         }
     }
 }
