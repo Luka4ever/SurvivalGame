@@ -15,6 +15,7 @@ namespace SurvivalGame.src
         private View view;
         private bool running;
         private Options options;
+        private UI ui;
 
         private float fps;
         private double lastFrameTime;
@@ -45,6 +46,7 @@ namespace SurvivalGame.src
             this.window = window;
             this.world = new World(seed, @"saves/save.csf");
             this.view = new View(window, this.world.GetPlayer());
+            this.ui = new UI(this.world.GetPlayer());
             this.running = false;
             this.options = options;
         }
@@ -95,6 +97,7 @@ namespace SurvivalGame.src
         {
             UpdateFPS();
             this.world.Draw(buffer.Graphics, this.view, delta);
+            this.ui.Draw(buffer.Graphics, this.world);
             buffer.Render();
         }
 

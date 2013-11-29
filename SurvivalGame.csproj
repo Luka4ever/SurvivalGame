@@ -73,6 +73,7 @@
     <Compile Include="src\Tiles\SandTile.cs" />
     <Compile Include="src\Tiles\VoidTile.cs" />
     <Compile Include="src\Tiles\WaterTile.cs" />
+    <Compile Include="src\UI.cs" />
     <Compile Include="src\Unit.cs" />
     <Compile Include="src\View.cs" />
     <Compile Include="src\World.cs" />

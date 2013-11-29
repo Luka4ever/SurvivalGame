@@ -55,5 +55,15 @@ namespace SurvivalGame.src
         {
             return this.view.Y;
         }
+
+        public int GetHeight()
+        {
+            return this.view.Height;
+        }
+
+        public int GetWidth()
+        {
+            return this.view.Width;
+        }
     }
 }
