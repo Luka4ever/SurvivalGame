@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SurvivalGame.src.Biomes;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -206,21 +207,51 @@ namespace SurvivalGame.src
             return (int) Math.Min(Math.Max(Math.Round(weight), 0), 10);
         }
 
+        public static float GetContinentSeed(double seed)
+        {
+            return (float)Math.Floor((double)(GetLocalSeed(seed) * (long)73 / (long)15 % (long)Int32.MaxValue));
+        }
+
+        public static float GetContinentNoise(int x, int y, float continentSeed)
+        {
+            return Noise.GetNoise((double)x / 256, (double)y / 256, continentSeed);
+        }
+
+        public static float GetBiomeSeed(double seed)
+        {
+            return (float)Math.Floor((double)(GetLocalSeed(seed) * (long)13 / (long)6 % (long)Int32.MaxValue));
+        }
+
+        public static float GetBiomeNoise(int x, int y, float biomeSeed)
+        {
+            return Noise.GetNoise((double)x / 128, (double)y / 128, biomeSeed);
+        }
+
+        public static float GetLocalSeed(double seed)
+        {
+            return (float)(seed / 1000d);
+        }
+
+        public static float GetLocalNoise(int x, int y, float localSeed)
+        {
+            return Noise.GetNoise((double)x / 32, (double)y / 32, localSeed);
+        }
+
         public Chunk Generate(double seed)
         {
-            seed = seed / 1000;
+            float localSeed = GetLocalSeed(seed);
+            float biomeSeed = GetBiomeSeed(seed);
+            float continentSeed = GetContinentSeed(seed);
+
             for (int y = 0; y < Chunk.size; y++)
             {
                 for (int x = 0; x < Chunk.size; x++)
                 {
-                    float biomeSeed = (float)Math.Floor((double)(seed * (long)13 / (long)6 % (long)Int32.MaxValue));
-                    float biomeNoise = Noise.GetNoise((double)(x + this.x * Chunk.size) / 32, (double)(y + this.y * Chunk.size) / 32, biomeSeed);
-                    float localNoise = Noise.GetNoise((double)(x + this.x * Chunk.size) / 32, (double)(y + this.y * Chunk.size) / 32, seed);
+                    float localNoise = GetLocalNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, localSeed);
+                    float biomeNoise = GetBiomeNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, biomeSeed);
+                    float worldNoise = GetContinentNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, continentSeed);
+                    this.SetTile(x, y, Biome.GetContinentFromNoise(worldNoise).GetBiomeFromNoise(biomeNoise).Generate(localNoise));
 
-                    this.tiles[this.ToIndex(x, y)] = 1; 
-                    if (localNoise > 0.3) { this.tiles[this.ToIndex(x, y)] = 2; }
-                    if (localNoise > 0.5) { this.tiles[this.ToIndex(x, y)] = 3; }
-                    if (localNoise > 0.7) { this.tiles[this.ToIndex(x, y)] = 4; }
                 }
             }
             return this;

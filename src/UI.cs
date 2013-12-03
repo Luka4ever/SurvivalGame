@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SurvivalGame.src.Biomes;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -34,9 +35,15 @@ namespace SurvivalGame.src
         public void Draw(Graphics g, World world)
         {
             Reset();
-            DrawLine(g, "X: " + this.player.X);
-            DrawLine(g, "Y: " + this.player.Y);
-            DrawLine(g, "Seed: " + world.Seed);
+            DrawLine(g, "X: " + this.player.X + ", Y: " + this.player.Y);
+            DrawLine(g, "S: " + world.Seed + ", L: " + Chunk.GetLocalSeed(world.Seed) + ", B: " + Chunk.GetBiomeSeed(world.Seed) + ", C: " + Chunk.GetContinentSeed(world.Seed));
+            Biome C = Biome.GetContinentFromNoise(Chunk.GetContinentNoise(this.player.X, this.player.Y, Chunk.GetContinentSeed(world.Seed)));
+            Biome B = C.GetBiomeFromNoise(Chunk.GetBiomeNoise(this.player.X, this.player.Y, Chunk.GetBiomeSeed(world.Seed)));
+            DrawLine(g, "C: " + C.Name + ", B: " + B.Name);
+            float CN = Chunk.GetContinentNoise(this.player.X, this.player.Y, Chunk.GetContinentSeed(world.Seed));
+            float BN = Chunk.GetBiomeNoise(this.player.X, this.player.Y, Chunk.GetBiomeSeed(world.Seed));
+            float LN = Chunk.GetLocalNoise(this.player.X, this.player.Y, Chunk.GetLocalSeed(world.Seed));
+            DrawLine(g, "CN: " + CN + ", BN: " + BN + ", LN: " + LN);
         }
     }
 }

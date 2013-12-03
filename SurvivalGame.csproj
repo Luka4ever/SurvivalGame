@@ -55,8 +55,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Biomes\Biome.cs" />
+    <Compile Include="src\Biomes\Continents\ContinentDry.cs" />
+    <Compile Include="src\Biomes\Continents\ContinentLush.cs" />
+    <Compile Include="src\Biomes\Continents\ContinentSea.cs" />
+    <Compile Include="src\Biomes\Local Biomes\BiomeDesert.cs" />
+    <Compile Include="src\Biomes\Local Biomes\BiomeField.cs" />
+    <Compile Include="src\Biomes\Local Biomes\BiomeForest.cs" />
+    <Compile Include="src\Biomes\Local Biomes\BiomeMountain.cs" />
+    <Compile Include="src\Biomes\Local Biomes\BiomeSea.cs" />
     <Compile Include="src\Chunk.cs" />
     <Compile Include="src\ChunkManager.cs" />
+    <Compile Include="src\Entities\Bunny.cs" />
     <Compile Include="src\Entities\Human.cs" />
     <Compile Include="src\Noise.cs" />
     <Compile Include="src\Entity.cs" />
@@ -68,6 +78,8 @@
     <Compile Include="src\MetaCollection.cs" />
     <Compile Include="src\Options.cs" />
     <Compile Include="src\Tile.cs" />
+    <Compile Include="src\Tiles\CliffTile.cs" />
+    <Compile Include="src\Tiles\DarkGrassTile.cs" />
     <Compile Include="src\Tiles\DirtTile.cs" />
     <Compile Include="src\Tiles\GrassTile.cs" />
     <Compile Include="src\Tiles\SandTile.cs" />

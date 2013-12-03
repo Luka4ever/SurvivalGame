@@ -53,61 +53,7 @@ namespace SurvivalGame.src
                 case (Actions.Move):
                     if (this.progress == 0)
                     {
-                        bool upSet = (this.control >> 3 & 1) == 1;
-                        bool up = (this.control >> 2 & 1) == 1;
-                        bool leftSet = (this.control >> 1 & 1) == 1;
-                        bool left = (this.control & 1) == 1;
-                        this.control = (byte)(this.control & 0xf0);
-                        if (upSet)
-                        {
-                            if (leftSet)
-                            {
-                                if (up)
-                                {
-                                    if (left)
-                                    {
-                                        this.direction = (byte)Direction.NorthWest;
-                                    }
-                                    else
-                                    {
-                                        this.direction = (byte)Direction.NorthEast;
-                                    }
-                                }
-                                else
-                                {
-                                    if (left)
-                                    {
-                                        this.direction = (byte)Direction.SouthWest;
-                                    }
-                                    else
-                                    {
-                                        this.direction = (byte)Direction.SouthEast;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (up)
-                                {
-                                    this.direction = (byte)Direction.North;
-                                }
-                                else
-                                {
-                                    this.direction = (byte)Direction.South;
-                                }
-                            }
-                        }
-                        else if (leftSet)
-                        {
-                            if (left)
-                            {
-                                this.direction = (byte)Direction.West;
-                            }
-                            else
-                            {
-                                this.direction = (byte)Direction.East;
-                            }
-                        }
+                        this.SetDirection();
                     }
                     Tile a = Tile.GetTile(world.GetTile(this.x, this.y));
                     int dx = this.x;
@@ -146,10 +92,19 @@ namespace SurvivalGame.src
                     this.progress += (float) ((double) this.speed / distance * Math.Sin(friction) * (double) delta);
                     if (this.progress >= 1)
                     {
-                        this.progress = 0;
                         this.x = dx;
                         this.y = dy;
-                        this.action = Actions.None;
+                        this.action = this.nextAction;
+                        this.nextAction = Actions.None;
+                        if (this.action == Actions.Move)
+                        {
+                            this.progress--;
+                            this.SetDirection();
+                        }
+                        else
+                        {
+                            this.progress = 0;
+                        }
                     }
                     break;
             }
@@ -159,6 +114,65 @@ namespace SurvivalGame.src
         protected override void Draw(Graphics g, View view, World world, float delta, int image)
         {
             g.DrawImage(ImageManager.GetImage(image), this.GetVisualX() - view.GetX(), this.GetVisualY() - Tile.size / 4 - view.GetY());
+        }
+
+        protected void SetDirection()
+        {
+            bool upSet = (this.control >> 3 & 1) == 1;
+            bool up = (this.control >> 2 & 1) == 1;
+            bool leftSet = (this.control >> 1 & 1) == 1;
+            bool left = (this.control & 1) == 1;
+            this.control = (byte)(this.control & 0xf0);
+            if (upSet)
+            {
+                if (leftSet)
+                {
+                    if (up)
+                    {
+                        if (left)
+                        {
+                            this.direction = (byte)Direction.NorthWest;
+                        }
+                        else
+                        {
+                            this.direction = (byte)Direction.NorthEast;
+                        }
+                    }
+                    else
+                    {
+                        if (left)
+                        {
+                            this.direction = (byte)Direction.SouthWest;
+                        }
+                        else
+                        {
+                            this.direction = (byte)Direction.SouthEast;
+                        }
+                    }
+                }
+                else
+                {
+                    if (up)
+                    {
+                        this.direction = (byte)Direction.North;
+                    }
+                    else
+                    {
+                        this.direction = (byte)Direction.South;
+                    }
+                }
+            }
+            else if (leftSet)
+            {
+                if (left)
+                {
+                    this.direction = (byte)Direction.West;
+                }
+                else
+                {
+                    this.direction = (byte)Direction.East;
+                }
+            }
         }
 
         public override int GetVisualX()

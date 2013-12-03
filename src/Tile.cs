@@ -52,6 +52,8 @@ namespace SurvivalGame.src
             tiles.Add(new GrassTile(ImageManager.RegisterImage(@"res/Tiles/grass1.png"), "Grass", 0.9f, 2));
             tiles.Add(new DirtTile(ImageManager.RegisterImage(@"res/Tiles/dirt1.png"), "Dirt", 0.9f, 3));
             tiles.Add(new SandTile(ImageManager.RegisterImage(@"res/Tiles/sand1.png"), "sand", 0.7f, 4));
+            tiles.Add(new DarkGrassTile(ImageManager.RegisterImage(@"res/Tiles/darkGrass1.png"), "Dark Grass", 0.75f, 5));
+            tiles.Add(new CliffTile(ImageManager.RegisterImage(@"res/Tiles/rocks1.png"), "Cliff", 0.65f, 6));
         }
 
         public static Tile GetTile(int index)

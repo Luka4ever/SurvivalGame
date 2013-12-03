@@ -1,4 +1,5 @@
 ﻿using SurvivalGame.src;
+using SurvivalGame.src.Biomes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,6 +41,7 @@ namespace SurvivalGame
             Item.Init();
             Tile.Init();
             Entity.Init();
+            Biome.Init();
             ImageManager.Close();
         }
 

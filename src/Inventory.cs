@@ -7,5 +7,9 @@ namespace SurvivalGame.src
 {
     class Inventory
     {
+        public Inventory()
+        {
+
+        }
     }
 }
