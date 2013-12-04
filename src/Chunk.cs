@@ -252,6 +252,11 @@ namespace SurvivalGame.src
                     float worldNoise = GetContinentNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, continentSeed);
                     this.SetTile(x, y, Biome.GetContinentFromNoise(worldNoise).GetBiomeFromNoise(biomeNoise).Generate(localNoise));
 
+                    Entity tempEntity = Biome.GetContinentFromNoise(worldNoise).GetBiomeFromNoise(biomeNoise).GenerateEntity(localNoise, biomeNoise, worldNoise, x + this.x * Chunk.size, y + this.y * Chunk.size, seed);
+                    if(tempEntity != null)
+                    {
+                        this.AddEntity(tempEntity);
+                    }
                 }
             }
             return this;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SurvivalGame.src.Biomes
 {
-    public abstract class Biome
+    abstract class Biome
     {
         private float minRange;
         private float maxRange;
@@ -64,6 +64,11 @@ namespace SurvivalGame.src.Biomes
         public virtual int Generate(float localNoise)
         {
             return 1;
+        }
+
+        public virtual Entity GenerateEntity(float localNoise, float biomeNoise, float continentNoise, int x, int y, double seed)
+        {
+            return null;
         }
 
         public string Name

@@ -39,9 +39,9 @@ namespace SurvivalGame.src
         public void Draw(Graphics g, View view, float delta)
         {
             int sy = view.GetY() / (Chunk.size * Tile.size) - 2;
-            int my = sy + (int) Math.Ceiling(g.VisibleClipBounds.Height / (Chunk.size * Tile.size)) + 2;
+            int my = sy + (int) Math.Ceiling(g.VisibleClipBounds.Height / (Chunk.size * Tile.size)) + 3;
             int sx = view.GetX() / (Chunk.size * Tile.size) - 2;
-            int mx = sx + (int)Math.Ceiling(g.VisibleClipBounds.Width / (Chunk.size * Tile.size)) + 2;
+            int mx = sx + (int)Math.Ceiling(g.VisibleClipBounds.Width / (Chunk.size * Tile.size)) + 3;
             for (int y = sy; y <= my; y++)
             {
                 for (int x = sx; x <= mx; x++)

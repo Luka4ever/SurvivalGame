@@ -152,14 +152,35 @@ namespace SurvivalGame.src
             this.Draw(g, view, world, delta, image);
         }
 
+        public virtual void Draw(Graphics g, View view, World world, float delta, int offX, int offY)
+        {
+            this.Draw(g, view, world, delta, image, offX, offY);
+        }
+
         protected virtual void Draw(Graphics g, View view, World world, float delta, int image)
         {
             g.DrawImage(ImageManager.GetImage(image), this.x * Tile.size - view.GetX(), this.y * Tile.size - Tile.size / 4 - view.GetY());
         }
 
+        protected virtual void Draw(Graphics g, View view, World world, float delta, int image, int offsetX, int offsetY)
+        {
+            g.DrawImage(ImageManager.GetImage(image), this.x * Tile.size - view.GetX() + offsetX, this.y * Tile.size - Tile.size / 4 - view.GetY() + offsetY);
+        }
+
         public static void Init()
         {
             Human.Init(ImageManager.RegisterImage(@"res/Entities/Human.png"));
+            Bunny.Init(ImageManager.RegisterImage(@"res/Entities/Bunny.png"));
+            OakTree.Init(ImageManager.RegisterImage(@"res/Entities/Tree2.png"));
+            PineTree.Init(ImageManager.RegisterImage(@"res/Entities/Tree1.png"));
+            Flower1.Init(ImageManager.RegisterImage(@"res/Entities/Flower1.png"));
+            Flower2.Init(ImageManager.RegisterImage(@"res/Entities/Flower2.png"));
+            GrassTuft.Init(ImageManager.RegisterImage(@"res/Entities/GrassTuft.png"));
+            Pebble1.Init(ImageManager.RegisterImage(@"res/Entities/pebble1.png"));
+            Pebble2.Init(ImageManager.RegisterImage(@"res/Entities/pebble2.png"));
+            Lilypad1.Init(ImageManager.RegisterImage(@"res/Entities/lilypad1.png"));
+            Lilypad2.Init(ImageManager.RegisterImage(@"res/Entities/lilypad2.png"));
+            Cactus.Init(ImageManager.RegisterImage(@"res/Entities/cactus.png"));
         }
 
         public int X

@@ -67,7 +67,17 @@
     <Compile Include="src\Chunk.cs" />
     <Compile Include="src\ChunkManager.cs" />
     <Compile Include="src\Entities\Bunny.cs" />
+    <Compile Include="src\Entities\Cactus.cs" />
+    <Compile Include="src\Entities\Flower1.cs" />
+    <Compile Include="src\Entities\Flower2.cs" />
+    <Compile Include="src\Entities\GrassTuft.cs" />
     <Compile Include="src\Entities\Human.cs" />
+    <Compile Include="src\Entities\Lilypad1.cs" />
+    <Compile Include="src\Entities\Lilypad2.cs" />
+    <Compile Include="src\Entities\OakTree.cs" />
+    <Compile Include="src\Entities\Pebble1.cs" />
+    <Compile Include="src\Entities\Pebble2.cs" />
+    <Compile Include="src\Entities\PineTree.cs" />
     <Compile Include="src\Interface\Node.cs" />
     <Compile Include="src\Noise.cs" />
     <Compile Include="src\Entity.cs" />

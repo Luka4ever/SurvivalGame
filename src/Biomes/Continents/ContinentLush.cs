@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SurvivalGame.src.Biomes.Continents
 {
-    public class ContinentLush : Biome
+    class ContinentLush : Biome
     {
         public ContinentLush(float minRange, float maxRange, string name)
             : base(minRange, maxRange, name)

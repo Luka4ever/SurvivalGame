@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SurvivalGame.src.Biomes
 {
-    public class BiomeMountain : Biome
+    class BiomeMountain : Biome
     {
         public BiomeMountain(float minRange, float maxRange, string name)
             : base(minRange, maxRange, name)
