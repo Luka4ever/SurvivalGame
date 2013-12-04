@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SurvivalGame.src.Tiles
 {
-    class SandTile : Tile
+    class DarkGrassTile : Tile
     {
-        public SandTile(int image, string name, float friction, int id) : base(image, name, friction, id)
+        public DarkGrassTile(int image, string name, float friction, int id) : base(image, name, friction, id)
         {
 
         }

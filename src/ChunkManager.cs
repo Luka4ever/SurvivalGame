@@ -16,9 +16,11 @@ namespace SurvivalGame.src
         private List<Chunk> active;
         private Thread thread;
         private Queue<WorkTask> tasks;
+        private float unload;
 
         public ChunkManager(string saveFilePath)
         {
+            this.unload = 0;
             this.saveFilePath = saveFilePath;
             this.chunks = new List<Chunk>();
             this.active = new List<Chunk>();
@@ -29,9 +31,38 @@ namespace SurvivalGame.src
 
         public void Tick(World world, float delta)
         {
+            if ((this.unload += delta) > 1)
+            {
+                this.unload = 0;
+                foreach (Chunk chunk in this.chunks)
+                {
+                    if (this.GetChunk(chunk.X - 1, chunk.Y - 1) != null &&
+                        this.GetChunk(chunk.X, chunk.Y - 1) != null &&
+                        this.GetChunk(chunk.X + 1, chunk.Y - 1) != null &&
+                        this.GetChunk(chunk.X - 1, chunk.Y) != null &&
+                        this.GetChunk(chunk.X + 1, chunk.Y) != null &&
+                        this.GetChunk(chunk.X - 1, chunk.Y + 1) != null &&
+                        this.GetChunk(chunk.X, chunk.Y + 1) != null &&
+                        this.GetChunk(chunk.X + 1, chunk.Y + 1) != null)
+                    {
+                        if (!this.active.Contains(chunk))
+                        {
+                            this.active.Add(chunk);
+                        }
+                    }
+                    else if (this.active.Contains(chunk))
+                    {
+                        this.active.Remove(chunk);
+                    }
+                }
+            }
             foreach (Chunk chunk in this.active)
             {
                 chunk.Tick(world, delta);
+            }
+            foreach (Chunk chunk in this.active)
+            {
+                chunk.CheckEntityPosition(world);
             }
         }
 
@@ -39,7 +70,7 @@ namespace SurvivalGame.src
         {
             //DO NOT SET DEBUG POINTS IN THIS METHOD
             //it will crash
-            FileStream saveFile;
+            FileStream saveFile = null;
             byte[] buffer;
             if (!File.Exists(this.saveFilePath))
             {
@@ -49,14 +80,26 @@ namespace SurvivalGame.src
             }
             else
             {
-                saveFile = File.Open(this.saveFilePath, FileMode.Open);
+                bool loaded = false;
+                while (!loaded)
+                {
+                    try
+                    {
+                        saveFile = File.Open(this.saveFilePath, FileMode.Open);
+                        loaded = true;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
             while (tasks.Count > 0)
             {
                 WorkTask task = tasks.Dequeue();
                 if (task.load)
                 {
-                    Console.WriteLine("Loading chunk");
+                    Console.WriteLine("Loading chunk [x: {0}, y: {1}]", task.x, task.y);
                     await this.LoadChunk(saveFile, task.x, task.y, task.seed);
                 }
                 else
@@ -73,6 +116,12 @@ namespace SurvivalGame.src
             {
                 if (task.x == x && task.y == y)
                 {
+                    if (!task.load)
+                    {
+                        Queue<WorkTask> queue = new Queue<WorkTask>(this.tasks.Count);
+                        if (!task.Equals(this.tasks.Peek())) queue.Enqueue(this.tasks.Dequeue());
+                        this.tasks = queue;
+                    }
                     return;
                 }
             }
@@ -90,6 +139,12 @@ namespace SurvivalGame.src
             {
                 if (task.x == x && task.y == y)
                 {
+                    if (task.load)
+                    {
+                        Queue<WorkTask> queue = new Queue<WorkTask>(this.tasks.Count);
+                        if (!task.Equals(this.tasks.Peek())) queue.Enqueue(this.tasks.Dequeue());
+                        this.tasks = queue;
+                    }
                     return;
                 }
             }
@@ -194,12 +249,12 @@ namespace SurvivalGame.src
 
         public int GetTile(int x, int y)
         {
-            Chunk chunk = this.GetChunk(x, y);
+            Chunk chunk = this.GetChunk((int)Math.Floor((double)x / (double)Chunk.size), (int)Math.Floor((double)y / (double)Chunk.size));
             if (chunk == null)
             {
                 return 0;
             }
-            return chunk.GetTile(x, y);
+            return chunk.GetTile((x + Chunk.size) % Chunk.size, (y + Chunk.size) % Chunk.size);
         }
 
         public Chunk GetChunk(int x, int y)

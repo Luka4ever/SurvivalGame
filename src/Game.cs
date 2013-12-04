@@ -15,6 +15,7 @@ namespace SurvivalGame.src
         private View view;
         private bool running;
         private Options options;
+        private UI ui;
 
         private float fps;
         private double lastFrameTime;
@@ -44,7 +45,8 @@ namespace SurvivalGame.src
         {
             this.window = window;
             this.world = new World(seed, @"saves/save.csf");
-            this.view = new View(window);
+            this.view = new View(window, this.world.GetPlayer());
+            this.ui = new UI(this.world.GetPlayer());
             this.running = false;
             this.options = options;
         }
@@ -76,7 +78,7 @@ namespace SurvivalGame.src
                     {
                         Console.WriteLine("Skipping Ticks!");
                     }
-                    Tick(1000f / (float) timeTick);
+                    Tick((float) timeTick / 1000f);
                 }
                 //Draw
                 if (this.options.LimitFPS)
@@ -85,7 +87,7 @@ namespace SurvivalGame.src
                 }
                 if (timeDraw > this.lastFrameTime + minimumDraw)
                 {
-                    Draw(buffer, 1000f / (float) timeDraw);
+                    Draw(buffer, (float) timeTick / 1000f);
                 }
                 System.Threading.Thread.Sleep(1);
             }
@@ -95,6 +97,7 @@ namespace SurvivalGame.src
         {
             UpdateFPS();
             this.world.Draw(buffer.Graphics, this.view, delta);
+            this.ui.Draw(buffer.Graphics, this.world);
             buffer.Render();
         }
 
@@ -115,7 +118,47 @@ namespace SurvivalGame.src
                 {
                     this.running = false;
                 }
+                else if (key.KeyCode == Keys.W && key.KeyDown)
+                {
+                    key.Handled = true;
+                    Unit player = (Unit) this.world.GetPlayer();
+                    if (player.GetProgress() == 0)
+                    {
+                        player.MoveUp();
+                        player.SetAction(Unit.Actions.Move);
+                    }
+                }
+                else if (key.KeyCode == Keys.S && key.KeyDown)
+                {
+                    key.Handled = true;
+                    Unit player = (Unit)this.world.GetPlayer();
+                    if (player.GetProgress() == 0)
+                    {
+                        player.MoveDown();
+                        player.SetAction(Unit.Actions.Move);
+                    }
+                }
                 else if (key.KeyCode == Keys.A && key.KeyDown)
+                {
+                    key.Handled = true;
+                    Unit player = (Unit)this.world.GetPlayer();
+                    if (player.GetProgress() == 0)
+                    {
+                        player.MoveLeft();
+                        player.SetAction(Unit.Actions.Move);
+                    }
+                }
+                else if (key.KeyCode == Keys.D && key.KeyDown)
+                {
+                    key.Handled = true;
+                    Unit player = (Unit)this.world.GetPlayer();
+                    if (player.GetProgress() == 0)
+                    {
+                        player.MoveRight();
+                        player.SetAction(Unit.Actions.Move);
+                    }
+                }
+                else if (key.KeyCode == Keys.G && key.KeyDown)
                 {
                     key.Handled = true;
                     for (int y = 0; y < Chunk.size; y++)

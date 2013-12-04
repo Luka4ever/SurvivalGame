@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SurvivalGame.src.Biomes;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -51,18 +52,49 @@ namespace SurvivalGame.src
 
         public void Tick(World world, float delta)
         {
-
+            foreach (Entity entity in this.entities)
+            {
+                entity.Tick(world, delta);
+            }
         }
 
         public void Draw(Graphics g, View view, World world, float delta)
         {
-            int X = this.x * size;
-            int Y = this.y * size;
+            Chunk cUp = world.GetChunk(this.x, this.y - 1);
+            Chunk cDown = world.GetChunk(this.x, this.y + 1);
+            Chunk cLeft = world.GetChunk(this.x - 1, this.y);
+            Chunk cRight = world.GetChunk(this.x + 1, this.y);
+            int X = this.x * Chunk.size;
+            int Y = this.y * Chunk.size;
+            for (int y = 0; y < Chunk.size; y++)
+            {
+                for (int x = 0; x < Chunk.size; x++)
+                {
+                    int up = (y > 0 ? this.tiles[this.ToIndex(x, y - 1)] : (cUp == null ? 0 : cUp.GetTile(x, y - 1)));
+                    int down = (y < Chunk.size - 1 ? this.tiles[this.ToIndex(x, y + 1)] : (cDown == null ? 0 : cDown.GetTile(x, y + 1)));
+                    int left = (x > 0 ? this.tiles[this.ToIndex(x - 1, y)] : (cLeft == null ? 0 : cLeft.GetTile(x - 1, y)));
+                    int right = (x < Chunk.size - 1 ? this.tiles[this.ToIndex(x + 1, y)] : (cRight == null ? 0 : cRight.GetTile(x + 1, y)));
+                    Tile.GetTile(this.tiles[this.ToIndex(x, y)]).Draw(g, view, world, X + x, Y + y, up, down, left, right);
+                }
+            }
+        }
+
+        public void DrawEntities(Graphics g, View view, World world, float delta)
+        {
+            List<Entity>[] entities = new List<Entity>[size];
             for (int y = 0; y < size; y++)
             {
-                for (int x = 0; x < size; x++)
+                entities[y] = new List<Entity>(5);
+            }
+            foreach (Entity entity in this.entities)
+            {
+                entities[(entity.Y % Chunk.size + Chunk.size) % Chunk.size].Add(entity);
+            }
+            for (int y = 0; y < size; y++)
+            {
+                foreach (Entity entity in entities[y])
                 {
-                    Tile.GetTile(this.tiles[this.ToIndex(x, y)]).Draw(g, view, world, X + x, Y + y);
+                    entity.Draw(g, view, world, delta);
                 }
             }
         }
@@ -88,7 +120,7 @@ namespace SurvivalGame.src
 
         public int ToIndex(int x, int y)
         {
-            return y * size + x;
+            return (y + Chunk.size) % Chunk.size * size + (x + Chunk.size) % Chunk.size;
         }
 
         public void CalcPathing()
@@ -175,23 +207,93 @@ namespace SurvivalGame.src
             return (int) Math.Min(Math.Max(Math.Round(weight), 0), 10);
         }
 
-        public Chunk Generate(int seed)
+        public static float GetContinentSeed(double seed)
         {
+            return (float)Math.Floor((double)(GetLocalSeed(seed) * (long)73 / (long)15 % (long)Int32.MaxValue));
+        }
+
+        public static float GetContinentNoise(int x, int y, float continentSeed)
+        {
+            return Noise.GetNoise((double)x / 256, (double)y / 256, continentSeed);
+        }
+
+        public static float GetBiomeSeed(double seed)
+        {
+            return (float)Math.Floor((double)(GetLocalSeed(seed) * (long)13 / (long)6 % (long)Int32.MaxValue));
+        }
+
+        public static float GetBiomeNoise(int x, int y, float biomeSeed)
+        {
+            return Noise.GetNoise((double)x / 128, (double)y / 128, biomeSeed);
+        }
+
+        public static float GetLocalSeed(double seed)
+        {
+            return (float)(seed / 1000d);
+        }
+
+        public static float GetLocalNoise(int x, int y, float localSeed)
+        {
+            return Noise.GetNoise((double)x / 32, (double)y / 32, localSeed);
+        }
+
+        public Chunk Generate(double seed)
+        {
+            float localSeed = GetLocalSeed(seed);
+            float biomeSeed = GetBiomeSeed(seed);
+            float continentSeed = GetContinentSeed(seed);
+
             for (int y = 0; y < Chunk.size; y++)
             {
                 for (int x = 0; x < Chunk.size; x++)
                 {
-                    float biomeSeed = (float)Math.Floor((double)((long)seed * (long)13 / (long)6 % (long)Int32.MaxValue));
-                    float biomeNoise = Noise.GetNoise((double)x / 32, (double)y / 32, biomeSeed);
-                    float localNoise = Noise.GetNoise((double)x/ 32, (double)y / 32, seed);
+                    float localNoise = GetLocalNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, localSeed);
+                    float biomeNoise = GetBiomeNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, biomeSeed);
+                    float worldNoise = GetContinentNoise(x + this.x * Chunk.size, y + this.y * Chunk.size, continentSeed);
+                    this.SetTile(x, y, Biome.GetContinentFromNoise(worldNoise).GetBiomeFromNoise(biomeNoise).Generate(localNoise));
 
-                    this.tiles[this.ToIndex(x, y)] = 1; 
-                    if (localNoise > 0.3) { this.tiles[this.ToIndex(x, y)] = 2; }
-                    if (localNoise > 0.5) { this.tiles[this.ToIndex(x, y)] = 3; }
-                    if (localNoise > 0.7) { this.tiles[this.ToIndex(x, y)] = 4; }
+                    Entity tempEntity = Biome.GetContinentFromNoise(worldNoise).GetBiomeFromNoise(biomeNoise).GenerateEntity(localNoise, biomeNoise, worldNoise, x + this.x * Chunk.size, y + this.y * Chunk.size, seed);
+                    if(tempEntity != null)
+                    {
+                        this.AddEntity(tempEntity);
+                    }
+
                 }
             }
             return this;
+        }
+
+        public void AddEntity(Entity entity)
+        {
+            this.entities.Add(entity);
+        }
+
+        public bool RemoveEntity(Entity entity)
+        {
+            return this.entities.Remove(entity);
+        }
+
+        public void CheckEntityPosition(World world)
+        {
+            List<Entity> remove = new List<Entity>();
+            foreach (Entity entity in this.entities)
+            {
+                int x = (int)Math.Floor((double)entity.X / (double)Chunk.size);
+                int y = (int)Math.Floor((double)entity.Y / (double)Chunk.size);
+                if (this.x != x || this.y != y)
+                {
+                    Chunk chunk = world.GetChunk(x, y);
+                    if (chunk != null)
+                    {
+                        remove.Add(entity);
+                        chunk.AddEntity(entity);
+                    }
+                }
+            }
+            foreach (Entity entity in remove)
+            {
+                this.entities.Remove(entity);
+            }
         }
     }
 }
