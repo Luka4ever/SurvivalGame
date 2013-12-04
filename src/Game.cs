@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SurvivalGame.src.Interface;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -47,6 +48,33 @@ namespace SurvivalGame.src
             this.world = new World(seed, @"saves/save.csf");
             this.view = new View(window, this.world.GetPlayer());
             this.ui = new UI(this.world.GetPlayer());
+            Node inventory = new Node();
+            inventory.ID = "inventory";
+            inventory.X = 10;
+            inventory.Y = 78;
+            inventory.Width = 288;
+            inventory.Height = 228;
+            inventory.BackgroundImage = ImageManager.RegisterImage(@"res/Interface/CharacterInventory.png");
+            inventory.Visible = false;
+            Node equipment = new Node();
+            equipment.ID = "col0";
+            equipment.Y = 93;
+            equipment.Width = 50;
+            equipment.Height = 135;
+            equipment.Padding = 9;
+            equipment.PaddingTop = 0;
+            equipment.PaddingBottom = 7;
+            for (var i = 1; i <= 3; i++)
+            {
+                Node cell = new Node();
+                cell.Width = 32;
+                cell.Height = 32;
+                cell.PaddingBottom = 16;
+                cell.Image = 1;
+                equipment.AddNode(cell);
+            }
+            inventory.AddNode(equipment);
+            this.ui.AddNode(inventory);
             this.running = false;
             this.options = options;
         }
@@ -97,7 +125,7 @@ namespace SurvivalGame.src
         {
             UpdateFPS();
             this.world.Draw(buffer.Graphics, this.view, delta);
-            this.ui.Draw(buffer.Graphics, this.world);
+            this.ui.Draw(buffer.Graphics, this.world, this);
             buffer.Render();
         }
 
@@ -169,12 +197,23 @@ namespace SurvivalGame.src
                         }
                     }
                 }
+                else if (key.KeyCode == Keys.B && key.KeyDown)
+                {
+                    key.Handled = true;
+                    Node inventory = this.ui.GetNodeByID("inventory");
+                    inventory.Visible = !inventory.Visible;
+                }
             }
         }
 
         public void Exit()
         {
             this.running = false;
+        }
+
+        public float FPS
+        {
+            get { return this.fps; }
         }
     }
 }

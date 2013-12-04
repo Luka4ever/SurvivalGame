@@ -208,5 +208,11 @@ namespace SurvivalGame.src
             }
             return (int)((this.y + y) * Tile.size);
         }
+
+        public Inventory Inventory
+        {
+            get { return this.inventory; }
+            set { this.inventory = value; }
+        }
     }
 }

@@ -68,6 +68,7 @@
     <Compile Include="src\ChunkManager.cs" />
     <Compile Include="src\Entities\Bunny.cs" />
     <Compile Include="src\Entities\Human.cs" />
+    <Compile Include="src\Interface\Node.cs" />
     <Compile Include="src\Noise.cs" />
     <Compile Include="src\Entity.cs" />
     <Compile Include="src\Game.cs" />

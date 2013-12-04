@@ -40,7 +40,7 @@ namespace SurvivalGame.src
         /// </summary>
         public static void Close() {
             Console.WriteLine("Finished image loading");
-            lookup = null;
+            //lookup = null;
         }
     }
 }

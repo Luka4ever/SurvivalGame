@@ -20,6 +20,7 @@ namespace SurvivalGame.src
             this.chunkManager = new ChunkManager(saveFilePath);
             this.chunkManager.Load(0, 0, seed);
             this.player = new Human(0, 0);
+            this.player.Inventory = new Inventory(16, 3, true);
             Chunk chunk;
             do
             {
