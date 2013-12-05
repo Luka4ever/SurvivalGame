@@ -28,10 +28,40 @@ namespace SurvivalGame.src.Interface
         private List<Node> children = new List<Node>();
         private bool visible = true;
         private string id = null;
+        private bool hover = false;
+        private Func<Node, int, int, bool> onClick = null;
+        private Func<Node, int, int, bool> onRelease = null;
+        private Action<Node> onMouseOver = null;
+        private Action<Node> onMouseOut = null;
+        private Node computed = null;
 
         public Node()
         {
 
+        }
+
+        public bool Click(Point cursor)
+        {
+            bool consumed = false;
+            if (this.visible)
+            {
+                bool clicked = new Rectangle(this.computed.x, this.computed.y, this.computed.width, this.computed.height).Contains(cursor);
+                if (clicked && this.onClick != null)
+                {
+                    consumed = this.onClick(this, cursor.X, cursor.Y);
+                }
+                if (clicked && !consumed)
+                {
+                    foreach (Node node in this.children)
+                    {
+                        if (!consumed && node.Click(cursor))
+                        {
+                            consumed = true;
+                        }
+                    }
+                }
+            }
+            return consumed;
         }
 
         public void AddNode(Node node)
@@ -57,18 +87,93 @@ namespace SurvivalGame.src.Interface
             return null;
         }
 
-        public virtual void Draw(Graphics g, int sx, int sy)
+        public virtual void Reflow(int sx, int sy)
+        {
+            this.computed = new Node();
+            this.computed.x = sx + this.x;
+            this.computed.y = sy + this.y;
+            this.computed.width = this.width;
+            this.computed.height = this.height;
+            this.computed.backgroundImage = this.backgroundImage;
+            this.computed.image = this.image;
+            this.computed.text = this.text;
+            this.computed.marginTop = this.marginTop;
+            this.computed.marginBottom = this.marginBottom;
+            this.computed.marginLeft = this.marginLeft;
+            this.computed.marginRight = this.marginRight;
+            this.computed.paddingTop = this.paddingTop;
+            this.computed.paddingBottom = this.paddingBottom;
+            this.computed.paddingLeft = this.paddingLeft;
+            this.computed.paddingRight = this.paddingRight;
+            this.computed.parent = this.parent;
+            this.computed.children = this.children;
+            this.computed.visible = this.visible;
+            this.computed.id = this.id;
+            this.computed.hover = this.hover;
+            int ssx = sx;
+            bool newLine = true;
+            Node last = null;
+            foreach (Node node in this.children)
+            {
+                if (sx + node.width > ssx + this.width)
+                {
+                    if (sx != ssx)
+                    {
+                        sy += node.height + node.paddingTop + node.paddingBottom;
+                        sx = ssx;
+                        newLine = true;
+                    }
+                }
+                node.Reflow(sx + this.x + (newLine ? this.paddingLeft : Math.Max(node.paddingLeft, last.paddingRight)), sy + this.y + this.paddingTop);
+                sx += node.width + (newLine ? node.paddingLeft : Math.Max(node.paddingLeft, last.paddingRight));
+                last = node;
+                newLine = false;
+            }
+        }
+
+        public virtual void Draw(Graphics g)
         {
             if (this.visible)
             {
                 if (this.backgroundImage != -1)
                 {
-                    g.DrawImage(ImageManager.GetImage(this.backgroundImage), sx + this.x, sy + this.y, this.width, this.height);
+                    g.DrawImage(ImageManager.GetImage(this.backgroundImage), this.computed.x, this.computed.y, this.computed.width, this.computed.height);
+                }
+                if (this.image != -1)
+                {
+                    g.DrawImage(ImageManager.GetImage(this.image), this.computed.x + this.computed.marginLeft, this.computed.y + this.computed.marginTop, this.computed.width - this.computed.marginLeft - this.computed.marginRight, this.computed.height - this.computed.marginTop - this.computed.marginBottom);
                 }
                 foreach (Node node in this.children)
                 {
-                    node.Draw(g, sx, sy);
+                    node.Draw(g);
                 }
+            }
+        }
+
+        public void CheckHover(Point cursor)
+        {
+            this.hover = new Rectangle(this.computed.x, this.computed.y, this.computed.width, this.computed.height).Contains(cursor);
+            if (this.hover != this.computed.hover)
+            {
+                this.computed.hover = this.hover;
+                if (this.hover)
+                {
+                    if (this.onMouseOver != null)
+                    {
+                        this.onMouseOver(this);
+                    }
+                }
+                else
+                {
+                    if (this.onMouseOut != null)
+                    {
+                        this.onMouseOut(this);
+                    }
+                }
+            }
+            foreach (Node node in this.children)
+            {
+                node.CheckHover(cursor);
             }
         }
 
@@ -199,6 +304,37 @@ namespace SurvivalGame.src.Interface
         {
             get { return this.id; }
             set { this.id = value; }
+        }
+
+        public bool Hover
+        {
+            get { return this.hover; }
+            set { this.hover = value; }
+        }
+
+        public Node Computed
+        {
+            get { return this.computed; }
+        }
+
+        public Func<Node, int, int, bool> OnClick
+        {
+            set { this.onClick = value; }
+        }
+
+        public Func<Node, int, int, bool> OnRelease
+        {
+            set { this.onRelease = value; }
+        }
+
+        public Action<Node> OnMouseOver
+        {
+            set { this.onMouseOver = value; }
+        }
+
+        public Action<Node> OnMouseOut
+        {
+            set { this.onMouseOut = value; }
         }
     }
 }

@@ -48,38 +48,12 @@ namespace SurvivalGame.src
             this.world = new World(seed, @"saves/save.csf");
             this.view = new View(window, this.world.GetPlayer());
             this.ui = new UI(this.world.GetPlayer());
-            Node inventory = new Node();
-            inventory.ID = "inventory";
-            inventory.X = 10;
-            inventory.Y = 78;
-            inventory.Width = 288;
-            inventory.Height = 228;
-            inventory.BackgroundImage = ImageManager.RegisterImage(@"res/Interface/CharacterInventory.png");
-            inventory.Visible = false;
-            Node equipment = new Node();
-            equipment.ID = "col0";
-            equipment.Y = 93;
-            equipment.Width = 50;
-            equipment.Height = 135;
-            equipment.Padding = 9;
-            equipment.PaddingTop = 0;
-            equipment.PaddingBottom = 7;
-            for (var i = 1; i <= 3; i++)
-            {
-                Node cell = new Node();
-                cell.Width = 32;
-                cell.Height = 32;
-                cell.PaddingBottom = 16;
-                cell.Image = 1;
-                equipment.AddNode(cell);
-            }
-            inventory.AddNode(equipment);
-            this.ui.AddNode(inventory);
+            this.ui.Reflow(this.view);
             this.running = false;
             this.options = options;
         }
 
-        public void Run(BufferedGraphics buffer, Queue<KeyEvent> inputQueue)
+        public void Run(BufferedGraphics buffer, Queue<KeyEvent> inputQueue, Form window)
         {
             TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
             this.running = true;
@@ -98,7 +72,7 @@ namespace SurvivalGame.src
                 int minimumTick = (int)Math.Floor(1000f / (float)targetTickRate);
                 Application.DoEvents();
                 //Input
-                Input(inputQueue);
+                Input(inputQueue, window);
                 //Tick
                 if (timeTick > minimumTick)
                 {
@@ -124,6 +98,7 @@ namespace SurvivalGame.src
         private void Draw(BufferedGraphics buffer, float delta)
         {
             UpdateFPS();
+            this.ui.Reflow(this.view);
             this.world.Draw(buffer.Graphics, this.view, delta);
             this.ui.Draw(buffer.Graphics, this.world, this);
             buffer.Render();
@@ -137,8 +112,9 @@ namespace SurvivalGame.src
             this.view.Tick(delta);
         }
 
-        private void Input(Queue<KeyEvent> inputQueue)
+        private void Input(Queue<KeyEvent> inputQueue, Form window)
         {
+            this.ui.Input(window);
             while (inputQueue.Count > 0)
             {
                 KeyEvent key = inputQueue.Dequeue();
@@ -186,16 +162,10 @@ namespace SurvivalGame.src
                         player.SetAction(Unit.Actions.Move);
                     }
                 }
-                else if (key.KeyCode == Keys.G && key.KeyDown)
+                else if (key.KeyCode == Keys.F3 && key.KeyDown)
                 {
                     key.Handled = true;
-                    for (int y = 0; y < Chunk.size; y++)
-                    {
-                        for (int x = 0; x < Chunk.size; x++)
-                        {
-                            this.world.SetTile(x, y, (this.world.GetTile(x, y) + 1) % 5);
-                        }
-                    }
+                    this.ui.Debug = !this.ui.Debug;
                 }
                 else if (key.KeyCode == Keys.B && key.KeyDown)
                 {
@@ -214,6 +184,11 @@ namespace SurvivalGame.src
         public float FPS
         {
             get { return this.fps; }
+        }
+
+        public UI UI
+        {
+            get { return this.ui; }
         }
     }
 }

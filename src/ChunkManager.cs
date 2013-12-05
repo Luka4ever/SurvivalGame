@@ -259,11 +259,11 @@ namespace SurvivalGame.src
 
         public Chunk GetChunk(int x, int y)
         {
-            foreach (Chunk chunk in this.chunks)
+            for (int i = 0; i < this.chunks.Count; i++)
             {
-                if (chunk.X == x && chunk.Y == y)
+                if (this.chunks[i].X == x && this.chunks[i].Y == y)
                 {
-                    return chunk;
+                    return this.chunks[i];
                 }
             }
             return null;

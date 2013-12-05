@@ -18,11 +18,13 @@ namespace SurvivalGame
         private Queue<KeyEvent> inputQueue;
         private Options options;
         private Game game;
+        private bool running = true;
 
         public Form1()
         {
             InitializeComponent();
             Init();
+            this.Text = "Game";
             this.options = Options.Load(properties);
             this.Visible = true;
             this.KeyPreview = true;
@@ -31,7 +33,8 @@ namespace SurvivalGame
             this.FormClosing += Form1_Closing;
             this.inputQueue = new Queue<KeyEvent>();
             this.game = new Game(new Random().Next(), this, options);
-            this.game.Run(BufferedGraphicsManager.Current.Allocate(CreateGraphics(), this.ClientRectangle), this.inputQueue);
+            this.Click += this.game.UI.Click;
+            this.game.Run(BufferedGraphicsManager.Current.Allocate(CreateGraphics(), this.ClientRectangle), this.inputQueue, this);
             options.Save(properties);
             System.Environment.Exit(0);
         }
