@@ -1,5 +1,4 @@
-﻿using SurvivalGame.src.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,16 +6,17 @@ using System.Threading.Tasks;
 
 namespace SurvivalGame.src
 {
-    abstract class Item
+    abstract class Equipment : Item
     {
         private string name;
         private int icon;
-        private static List<Item> items = new List<Item>();
+        private int damage;
+        private int defense;
 
-        public Item(string name, int icon)
+        public Equipment(string name, int icon, int damage, int defense) : base(name, icon)
         {
-            this.name = name;
-            this.icon = icon;
+            this.damage = damage;
+            this.defense = defense;
         }
 
         public virtual void Use(World world, Unit source)
@@ -26,7 +26,7 @@ namespace SurvivalGame.src
 
         public static void Init()
         {
-            items.Add(new Lumber("Lumber", ImageManager.RegisterImage(@"res/Entities/Human.png")));
+
         }
     }
 }

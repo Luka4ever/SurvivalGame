@@ -78,7 +78,9 @@
     <Compile Include="src\Entities\Pebble1.cs" />
     <Compile Include="src\Entities\Pebble2.cs" />
     <Compile Include="src\Entities\PineTree.cs" />
+    <Compile Include="src\Equipment.cs" />
     <Compile Include="src\Interface\Node.cs" />
+    <Compile Include="src\Items\Lumber.cs" />
     <Compile Include="src\Noise.cs" />
     <Compile Include="src\Entity.cs" />
     <Compile Include="src\Game.cs" />
