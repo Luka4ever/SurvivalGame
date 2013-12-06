@@ -170,6 +170,7 @@ namespace SurvivalGame.src
         public static void Init()
         {
             Human.Init(ImageManager.RegisterImage(@"res/Entities/Human.png"));
+            Orc.Init(ImageManager.RegisterImage(@"res/Entities/Orc.png"));
             Bunny.Init(ImageManager.RegisterImage(@"res/Entities/Bunny.png"));
             OakTree.Init(ImageManager.RegisterImage(@"res/Entities/Tree2.png"));
             PineTree.Init(ImageManager.RegisterImage(@"res/Entities/Tree1.png"));

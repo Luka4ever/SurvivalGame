@@ -9,6 +9,9 @@ namespace SurvivalGame.src.Interface
 {
     class Node
     {
+        protected static Font font = new Font("Lucida Console", 14, FontStyle.Bold);
+        protected static Brush brush = new SolidBrush(Color.White);
+        
         private int x = 0;
         private int y = 0;
         private int width = 0;
@@ -147,6 +150,7 @@ namespace SurvivalGame.src.Interface
                 {
                     g.DrawImage(ImageManager.GetImage(this.image), this.computed.x + this.computed.marginLeft, this.computed.y + this.computed.marginTop, this.computed.width - this.computed.marginLeft - this.computed.marginRight, this.computed.height - this.computed.marginTop - this.computed.marginBottom);
                 }
+                g.DrawString(this.computed.text, font, brush, this.computed.x + this.computed.marginLeft, this.computed.y + this.computed.marginTop);
                 foreach (Node node in this.children)
                 {
                     node.Draw(g);

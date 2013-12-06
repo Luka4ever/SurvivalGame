@@ -22,6 +22,18 @@ namespace SurvivalGame.src
             this.equippedImage = equippedImage;
         }
 
+        public int Damage
+        {
+            get { return damage; }
+            set { damage = value; }
+        }
+
+        public int Defense
+        {
+            get { return defense; }
+            set { defense = value; }
+        }
+
         public virtual void Use(World world, Unit source)
         {
 

@@ -76,6 +76,7 @@
     <Compile Include="src\Entities\Lilypad1.cs" />
     <Compile Include="src\Entities\Lilypad2.cs" />
     <Compile Include="src\Entities\OakTree.cs" />
+    <Compile Include="src\Entities\Orc.cs" />
     <Compile Include="src\Entities\Ore.cs" />
     <Compile Include="src\Entities\Pebble1.cs" />
     <Compile Include="src\Entities\Pebble2.cs" />

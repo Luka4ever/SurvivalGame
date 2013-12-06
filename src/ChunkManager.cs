@@ -34,8 +34,10 @@ namespace SurvivalGame.src
             if ((this.unload += delta) > 1)
             {
                 this.unload = 0;
-                foreach (Chunk chunk in this.chunks)
+
+                for (int i = 0; i < this.chunks.Count; i++)
                 {
+                    Chunk chunk = this.chunks[i];
                     if (this.GetChunk(chunk.X - 1, chunk.Y - 1) != null &&
                         this.GetChunk(chunk.X, chunk.Y - 1) != null &&
                         this.GetChunk(chunk.X + 1, chunk.Y - 1) != null &&
@@ -112,8 +114,9 @@ namespace SurvivalGame.src
 
         public void Load(int x, int y, int seed)
         {
-            foreach (WorkTask task in this.tasks)
+            for (int i = 0; i < this.tasks.Count; i++)
             {
+                WorkTask task = this.tasks.Dequeue();
                 if (task.x == x && task.y == y)
                 {
                     if (!task.load)

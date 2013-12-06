@@ -16,6 +16,7 @@ namespace SurvivalGame.src
 
         public Unit(int x, int y, int health) : base(x, y)
         {
+            this.health = health;
             this.action = Actions.None;
             this.nextAction = Actions.None;
             this.speed = 3;
@@ -39,6 +40,10 @@ namespace SurvivalGame.src
 
         public override void Tick(World world, float delta)
         {
+            if (this.health <= 0)
+            {
+                this.Kill(world);
+            }
             if (this.action == Actions.None)
             {
                 this.progress = 0;

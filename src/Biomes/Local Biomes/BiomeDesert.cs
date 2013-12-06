@@ -40,9 +40,15 @@ namespace SurvivalGame.src.Biomes
                 {
                     return new Pebble1(x, y);
                 }
+
                 if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.06)
                 {
                     return new Pebble2(x, y);
+                }
+
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.07)
+                {
+                    return new Orc(x, y);
                 }
 
             }

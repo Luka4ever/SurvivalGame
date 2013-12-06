@@ -30,6 +30,11 @@ namespace SurvivalGame.src.Biomes
                 {
                     return new PineTree(x, y);
                 }
+
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.02)
+                {
+                    return new Orc(x, y);
+                }
             }
 
             if (localNoise < 0.65)
@@ -47,7 +52,12 @@ namespace SurvivalGame.src.Biomes
                 if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.1)
                 {
                     return new GrassTuft(x, y);
-                } 
+                }
+
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.02)
+                {
+                    return new Orc(x, y);
+                }
             }
             return null;
         }

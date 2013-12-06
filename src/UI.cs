@@ -1,4 +1,5 @@
 ﻿using SurvivalGame.src.Biomes;
+using SurvivalGame.src.Entities;
 using SurvivalGame.src.Interface;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,6 @@ namespace SurvivalGame.src
         private Form window;
         private Entity player;
         private int line;
-        private Font font;
-        private Brush brush;
         private List<Node> children;
         private bool dragging = false;
         private int draggingItem = -1;
@@ -26,8 +25,6 @@ namespace SurvivalGame.src
         {
             this.window = window;
             this.player = player;
-            this.font = new Font("Lucida Console", 14, FontStyle.Bold);
-            this.brush = new SolidBrush(Color.White);
             this.children = new List<Node>();
             this.InitGameInterface();
         }
@@ -108,7 +105,46 @@ namespace SurvivalGame.src
             drag.Height = 30;
             this.AddNode(drag);
             Node bars = new Node();
-
+            bars.ID = "bars";
+            bars.Height = 40;
+            bars.Width = 96;
+            Node health = new Node();
+            health.ID = "health";
+            health.Width = 96;
+            health.Height = 18;
+            health.MarginBottom = 2;
+            health.Image = ImageManager.RegisterImage(@"res/Interface/HealthBar.png");
+            Node healthMeter = new Node();
+            healthMeter.ID = "healthMeter";
+            healthMeter.Height = 16;
+            healthMeter.MarginLeft = 15;
+            healthMeter.MarginTop = 6;
+            healthMeter.MarginBottom = 6;
+            healthMeter.Image = ImageManager.RegisterImage(@"res/Interface/Bar.png");
+            health.AddNode(healthMeter);
+            bars.AddNode(health);
+            Node hunger = new Node();
+            hunger.ID = "hunger";
+            hunger.Width = 96;
+            hunger.Height = 18;
+            hunger.MarginBottom = 2;
+            hunger.Image = ImageManager.RegisterImage(@"res/Interface/HungerBar.png");
+            Node hungerMeter = new Node();
+            hungerMeter.ID = "hungerMeter";
+            hungerMeter.Height = 16;
+            hungerMeter.Width = 40;
+            hungerMeter.MarginLeft = 15;
+            hungerMeter.MarginTop = 6;
+            hungerMeter.MarginBottom = 6;
+            hungerMeter.Image = ImageManager.RegisterImage(@"res/Interface/Bar.png");
+            hunger.AddNode(hungerMeter);
+            bars.AddNode(hunger);
+            this.AddNode(bars);
+            Node dead = new Node();
+            dead.ID = "dead";
+            dead.Text = "You have died";
+            dead.Visible = false;
+            this.AddNode(dead);
         }
 
         private void Reset()
@@ -140,6 +176,18 @@ namespace SurvivalGame.src
             drag.Computed.X = Cursor.Position.X - this.window.DesktopLocation.X - drag.X - 8;
             drag.Computed.Y = Cursor.Position.Y - this.window.DesktopLocation.Y - drag.Y - 32;
             drag.Image = (this.draggingItem != -1 ? Item.GetItem(this.draggingItem).Icon : -1);
+            Node bars = this.GetNodeByID("bars");
+            Node hungerMeter = bars.GetNodeByID("hungerMeter");
+            Node healthMeter = bars.GetNodeByID("healthMeter");
+            hungerMeter.Width = (int)Math.Round(80d * (((Human)this.player).Hunger / 100d) + 16d);
+            healthMeter.Width = Math.Min((int)Math.Round(80d * (((Human)this.player).Health / 20d) + 16d), 96);
+            bars.Reflow(8, this.window.ClientSize.Height - 50);
+            if (((Human)this.player).Health <= 0)
+            {
+                Node dead = this.GetNodeByID("dead");
+                dead.Visible = true;
+                dead.Reflow(this.window.ClientSize.Width / 2 - 50, this.window.ClientSize.Height / 2 - 10);
+            }
             for (int i = 0; i < 3; i++)
             {
                 int item = ((Unit)this.player).Inventory.GetEquipmentAt(i);

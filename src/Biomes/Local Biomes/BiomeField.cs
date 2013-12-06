@@ -50,6 +50,7 @@ namespace SurvivalGame.src.Biomes
                 {
                     return new Bunny(x, y);
                 }
+
             }
 
             if (localNoise < 0.25)
