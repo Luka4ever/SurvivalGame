@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SurvivalGame.src.Items
 {
-    class Lumber : Item
+    class StandardItem : Item
     {
-        public Lumber(string name, int icon) : base(name, icon)
+        public StandardItem(string name, int icon) : base(name, icon)
         {
 
         }

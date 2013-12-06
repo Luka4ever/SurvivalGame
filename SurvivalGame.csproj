@@ -80,7 +80,10 @@
     <Compile Include="src\Entities\PineTree.cs" />
     <Compile Include="src\Equipment.cs" />
     <Compile Include="src\Interface\Node.cs" />
-    <Compile Include="src\Items\Lumber.cs" />
+    <Compile Include="src\Items\StandardArmor.cs" />
+    <Compile Include="src\Items\StandardHelmet.cs" />
+    <Compile Include="src\Items\StandardItem.cs" />
+    <Compile Include="src\Items\StandardWeapon.cs" />
     <Compile Include="src\Noise.cs" />
     <Compile Include="src\Entity.cs" />
     <Compile Include="src\Game.cs" />

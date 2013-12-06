@@ -135,6 +135,10 @@ namespace SurvivalGame.src.Interface
         {
             if (this.visible)
             {
+                if (this.ID == "drag")
+                {
+
+                }
                 if (this.backgroundImage != -1)
                 {
                     g.DrawImage(ImageManager.GetImage(this.backgroundImage), this.computed.x, this.computed.y, this.computed.width, this.computed.height);

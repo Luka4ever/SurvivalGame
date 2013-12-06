@@ -10,13 +10,16 @@ namespace SurvivalGame.src
     {
         private string name;
         private int icon;
+        private int equippedImage;
         private int damage;
         private int defense;
 
-        public Equipment(string name, int icon, int damage, int defense) : base(name, icon)
+        public Equipment(string name, int icon, int damage, int defense, int equippedImage)
+            : base(name, icon)
         {
             this.damage = damage;
             this.defense = defense;
+            this.equippedImage = equippedImage;
         }
 
         public virtual void Use(World world, Unit source)

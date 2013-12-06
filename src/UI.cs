@@ -12,6 +12,7 @@ namespace SurvivalGame.src
 {
     class UI : Node
     {
+        private Form window;
         private Entity player;
         private int line;
         private Font font;
@@ -21,8 +22,9 @@ namespace SurvivalGame.src
         private int draggingItem = -1;
         private bool debug = false;
 
-        public UI(Entity player)
+        public UI(Entity player, Form window)
         {
+            this.window = window;
             this.player = player;
             this.font = new Font("Lucida Console", 14, FontStyle.Bold);
             this.brush = new SolidBrush(Color.White);
@@ -56,7 +58,6 @@ namespace SurvivalGame.src
                 cell.Height = 32;
                 cell.PaddingBottom = 16;
                 cell.Margin = 1;
-                cell.Image = i + 1;
                 cell.OnClick = this.Click;
                 equipment.AddNode(cell);
             }
@@ -77,7 +78,6 @@ namespace SurvivalGame.src
                     cell.Height = 32;
                     cell.PaddingBottom = 16;
                     cell.Margin = 1;
-                    cell.Image = i + c;
                     cell.OnClick = this.Click;
                     col.AddNode(cell);
                 }
@@ -97,7 +97,6 @@ namespace SurvivalGame.src
                 cell.Height = 32;
                 cell.PaddingBottom = 16;
                 cell.Margin = 1;
-                cell.Image = i + 1;
                 cell.OnClick = this.Click;
                 crafting.AddNode(cell);
             }
@@ -136,9 +135,27 @@ namespace SurvivalGame.src
                 DrawLine(g, "CN: " + CN + ", BN: " + BN + ", LN: " + LN);
             }
             Node drag = this.GetNodeByID("drag");
-            drag.Computed.X = Cursor.Position.X + drag.X;
-            drag.Computed.Y = Cursor.Position.Y + drag.Y;
-            drag.Computed.Image = 1;
+            drag.Computed.X = Cursor.Position.X - this.window.DesktopLocation.X - drag.X - 8;
+            drag.Computed.Y = Cursor.Position.Y - this.window.DesktopLocation.Y - drag.Y - 32;
+            drag.Image = (this.draggingItem != -1 ? Item.GetItem(this.draggingItem).Icon : -1);
+            for (int i = 0; i < 3; i++)
+            {
+                int item = ((Unit)this.player).Inventory.GetEquipmentAt(i);
+                this.GetNodeByID("col0row" + (i + 1)).Image = (item == -1 ? -1 : Item.GetItem(item).Icon);
+            }
+            for (int r = 0; r < 4; r++)
+            {
+                for (int c = 0; c < 4; c++)
+                {
+                    int item = ((Unit)this.player).Inventory.GetItemAt(r * 4 + c);
+                    this.GetNodeByID("col" + (c + 1) + "row" + r).Image = (item == -1 ? -1 : Item.GetItem(item).Icon);
+                }
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                int item = ((Unit)this.player).Inventory.GetCraftingItemAt(i);
+                this.GetNodeByID("col5row" + i).Image = (item == -1 ? -1 : Item.GetItem(item).Icon);
+            }
             this.Draw(g);
         }
 
@@ -150,10 +167,69 @@ namespace SurvivalGame.src
             {
                 int slot = row - 1;
                 int item = ((Unit)this.player).Inventory.GetEquipmentAt(slot);
+                if (this.dragging)
+                {
+                    bool valid = false;
+                    if (slot == 0 && Item.GetItem(this.draggingItem).GetType() == typeof(Items.StandardHelmet))
+                    {
+                        valid = true;
+                    }
+                    else if (slot == 1 && Item.GetItem(this.draggingItem).GetType() == typeof(Items.StandardArmor))
+                    {
+                        valid = true;
+                    }
+                    else if (slot == 2 && Item.GetItem(this.draggingItem).GetType() == typeof(Items.StandardWeapon))
+                    {
+                        valid = true;
+                    }
+                    if (valid)
+                    {
+                        ((Unit)this.player).Inventory.SetEquipmentAt(slot, this.draggingItem);
+                        this.draggingItem = item;
+                        this.dragging = this.draggingItem != -1;
+                    }
+                }
+                else if (item != -1)
+                {
+                    this.dragging = true;
+                    this.draggingItem = item;
+                    ((Unit)this.player).Inventory.SetEquipmentAt(slot, -1);
+                    Node drag = this.GetNodeByID("drag");
+                    drag.X = x - node.Computed.X;
+                    drag.Y = y - node.Computed.Y;
+                    drag.Visible = this.dragging;
+                }
             }
             else if (col == 5)
             {
-
+                if (row == 3)
+                {
+                    int item = ((Unit)this.player).Inventory.GetCraftingItemAt(row);
+                    if (!this.dragging && item != -1)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            ((Unit)this.player).Inventory.SetCraftingItemAt(i, -1);
+                        }
+                        this.dragging = true;
+                        this.draggingItem = item;
+                        Node drag = this.GetNodeByID("drag");
+                        drag.X = x - node.Computed.X;
+                        drag.Y = y - node.Computed.Y;
+                        drag.Visible = this.dragging;
+                    }
+                }
+                else
+                {
+                    int item = ((Unit)this.player).Inventory.GetCraftingItemAt(row);
+                    ((Unit)this.player).Inventory.SetCraftingItemAt(row, this.draggingItem);
+                    this.draggingItem = item;
+                    this.dragging = this.draggingItem != -1;
+                    Node drag = this.GetNodeByID("drag");
+                    drag.X = x - node.Computed.X;
+                    drag.Y = y - node.Computed.Y;
+                    drag.Visible = this.dragging;
+                }
             }
             else
             {
