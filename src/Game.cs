@@ -47,6 +47,7 @@ namespace SurvivalGame.src
             this.window = window;
             this.world = new World(seed, @"saves/save.csf");
             this.view = new View(window, this.world.GetPlayer());
+            this.view.Tick(0);
             this.ui = new UI(this.world.GetPlayer(), window);
             this.ui.Reflow(this.view);
             this.running = false;

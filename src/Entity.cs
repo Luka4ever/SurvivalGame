@@ -181,6 +181,7 @@ namespace SurvivalGame.src
             Lilypad1.Init(ImageManager.RegisterImage(@"res/Entities/lilypad1.png"));
             Lilypad2.Init(ImageManager.RegisterImage(@"res/Entities/lilypad2.png"));
             Cactus.Init(ImageManager.RegisterImage(@"res/Entities/cactus.png"));
+            Ore.Init(ImageManager.RegisterImage(@"res/Entities/rock.png"));
         }
 
         public int X

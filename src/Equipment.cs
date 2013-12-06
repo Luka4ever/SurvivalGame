@@ -31,5 +31,10 @@ namespace SurvivalGame.src
         {
 
         }
+
+        public int Image
+        {
+            get { return this.equippedImage; }
+        }
     }
 }

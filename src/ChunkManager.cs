@@ -292,5 +292,25 @@ namespace SurvivalGame.src
                 this.seed = 0;
             }
         }
+
+        public Entity GetEntityAt(int x, int y)
+        {
+            Chunk chunk = this.GetChunk((int)Math.Floor((double)x / (double)Chunk.size), (int)Math.Floor((double)y / (double)Chunk.size));
+            if (chunk == null)
+            {
+                return null;
+            }
+            return chunk.GetEntityAt((x + Chunk.size) % Chunk.size, (y + Chunk.size) % Chunk.size);
+        }
+
+        public List<Entity> GetEntitiesAt(int x, int y)
+        {
+            Chunk chunk = this.GetChunk((int)Math.Floor((double)x / (double)Chunk.size), (int)Math.Floor((double)y / (double)Chunk.size));
+            if (chunk == null)
+            {
+                return new List<Entity>();
+            }
+            return chunk.GetEntitiesAt(x, y);
+        }
     }
 }

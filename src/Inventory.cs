@@ -18,7 +18,7 @@ namespace SurvivalGame.src
             Random rnd = new Random();
             for (int i = 0; i < slots; i++)
             {
-                this.slots[i] = rnd.Next(24) - 1;
+                this.slots[i] = rnd.Next(27) - 1;
             }
             this.equipment = new int[equipment];
             for (int i = 0; i < equipment; i++)
@@ -64,6 +64,19 @@ namespace SurvivalGame.src
         public void SetCraftingItemAt(int slot, int item)
         {
             this.craftingSlots[slot] = item;
+        }
+
+        public bool AddItem(int item)
+        {
+            for (int i = 0; i < this.slots.Length; i++)
+            {
+                if (this.slots[i] == -1)
+                {
+                    this.slots[i] = item;
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

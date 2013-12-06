@@ -114,6 +114,23 @@ namespace SurvivalGame.src
         protected override void Draw(Graphics g, View view, World world, float delta, int image)
         {
             g.DrawImage(ImageManager.GetImage(image), this.GetVisualX() - view.GetX(), this.GetVisualY() - Tile.size / 4 - view.GetY());
+            if (this.inventory != null)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    int item = this.inventory.GetEquipmentAt(i);
+                    if (item != -1)
+                    {
+                        g.DrawImage(ImageManager.GetImage(((Equipment)Item.GetItem(item)).Image), this.GetVisualX() - view.GetX(), this.GetVisualY() - Tile.size / 4 - view.GetY());
+                    }
+                }
+            }
+        }
+
+        public virtual void Kill(World world)
+        {
+            this.health = 0;
+            world.GetChunk((int)Math.Floor((double)this.x / (double)Chunk.size), (int)Math.Floor((double)this.y / (double)Chunk.size)).RemoveEntity(this);
         }
 
         protected void SetDirection()

@@ -26,6 +26,11 @@ namespace SurvivalGame.src.Biomes
         {
             if (localNoise > 0.25 && localNoise < 0.8)
             {
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.0025)
+                {
+                    return new Ore(x, y);
+                }
+
                 if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.02)
                 {
                     return new OakTree(x, y);
@@ -39,17 +44,28 @@ namespace SurvivalGame.src.Biomes
                 if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.06)
                 {
                     return new Flower1(x, y);
-                } 
+                }
+
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.07)
+                {
+                    return new Bunny(x, y);
+                }
             }
 
             if (localNoise < 0.25)
             {
-                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.02)
+
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.002)
+                {
+                    return new Ore(x, y);
+                }
+
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.04)
                 {
                     return new Pebble1(x, y);
                 }
 
-                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.04)
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.06)
                 {
                     return new Pebble2(x, y);
                 }

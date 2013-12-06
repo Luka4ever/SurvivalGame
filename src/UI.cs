@@ -107,6 +107,8 @@ namespace SurvivalGame.src
             drag.Width = 30;
             drag.Height = 30;
             this.AddNode(drag);
+            Node bars = new Node();
+
         }
 
         private void Reset()

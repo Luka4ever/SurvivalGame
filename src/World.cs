@@ -19,7 +19,7 @@ namespace SurvivalGame.src
             this.seed = seed;
             this.chunkManager = new ChunkManager(saveFilePath);
             this.chunkManager.Load(0, 0, seed);
-            this.player = new Human(0, 0);
+            this.player = new Human(32, 32);
             this.player.Inventory = new Inventory(16, 3, true);
             Chunk chunk;
             do
@@ -101,6 +101,16 @@ namespace SurvivalGame.src
         public Entity GetPlayer()
         {
             return this.player;
+        }
+
+        public Entity GetEntityAt(int x, int y)
+        {
+            return this.chunkManager.GetEntityAt(x, y);
+        }
+
+        public List<Entity> GetEntitiesAt(int x, int y)
+        {
+            return this.chunkManager.GetEntitiesAt(x, y);
         }
     }
 }

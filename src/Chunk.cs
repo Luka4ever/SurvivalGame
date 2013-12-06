@@ -52,9 +52,9 @@ namespace SurvivalGame.src
 
         public void Tick(World world, float delta)
         {
-            foreach (Entity entity in this.entities)
+            for (int i = 0; i < this.entities.Count; i++)
             {
-                entity.Tick(world, delta);
+                this.entities[i].Tick(world, delta);
             }
         }
 
@@ -293,6 +293,31 @@ namespace SurvivalGame.src
             {
                 this.entities.Remove(entity);
             }
+        }
+
+        public Entity GetEntityAt(int x, int y)
+        {
+            foreach (Entity entity in this.entities)
+            {
+                if (entity.X == x && entity.Y == y)
+                {
+                    return entity;
+                }
+            }
+            return null;
+        }
+
+        public List<Entity> GetEntitiesAt(int x, int y)
+        {
+            List<Entity> entities = new List<Entity>(2);
+            for (int i = 0; i < this.entities.Count; i++)
+            {
+                if (this.entities[i].X == x && this.entities[i].Y == y)
+                {
+                    entities.Add(this.entities[i]);
+                }
+            }
+            return entities;
         }
     }
 }

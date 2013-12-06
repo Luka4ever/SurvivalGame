@@ -34,6 +34,11 @@ namespace SurvivalGame.src.Biomes
 
             if (localNoise < 0.65)
             {
+                if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.002)
+                {
+                    return new Ore(x, y);
+                }
+
                 if (localNoise * localNoise * seed / biomeNoise * continentNoise % 1 < 0.045)
                 {
                     return new PineTree(x, y);
